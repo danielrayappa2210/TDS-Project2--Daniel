@@ -58,6 +58,8 @@ elif error_message:
 else:
     print(f"Request failed with return code: {return_code}")
 
+# ====================================================================================================================
+
 def run_prettier():
     """
     Runs prettier on README.md and calculates its SHA256 checksum.
@@ -98,6 +100,8 @@ if return_code == 0:
 else:
     print(f"Request failed with return code: {return_code}")
 
+# ====================================================================================================================
+
 def calculate_formula_in_sheet(web_app_url, formula):
     """
     Puts a formula in A1, computes in B1, and returns the result.
@@ -134,6 +138,8 @@ result = calculate_formula_in_sheet(web_app_url, formula)
 
 if result is not None:
     print(f"Result of formula '{formula}': {result}")
+
+# ====================================================================================================================
 
 import openpyxl
 from xlcalculator import Model, parser, Evaluator
@@ -175,6 +181,8 @@ if simple_result is not None:
     print(f"The result of the simple formula is: {simple_result}")
 else:
     print("Could not evaluate the formula.")
+
+# ====================================================================================================================
 
 import datetime
 
@@ -223,6 +231,8 @@ target_day2 = "Sunday"
 
 result2 = count_days_in_range(start_date2, end_date2, target_day2)
 print(f"Number of {target_day2}s between {start_date2} and {end_date2}: {result2}")
+
+# ====================================================================================================================
 
 import zipfile
 import os
@@ -318,6 +328,8 @@ if answers:
 else:
     print("Failed to extract answers.")
 
+# ====================================================================================================================
+
 def sort_json_array(json_string):
     """
     Sorts a JSON array of objects by age, then by name in case of a tie.
@@ -339,6 +351,8 @@ def sort_json_array(json_string):
 json_data = '[{"name":"Alice","age":26},{"name":"Bob","age":10},{"name":"Charlie","age":72},{"name":"David","age":56},{"name":"Emma","age":55},{"name":"Frank","age":54},{"name":"Grace","age":56},{"name":"Henry","age":18},{"name":"Ivy","age":36},{"name":"Jack","age":9},{"name":"Karen","age":95},{"name":"Liam","age":86},{"name":"Mary","age":97},{"name":"Nora","age":11},{"name":"Oscar","age":22},{"name":"Paul","age":84}]'
 sorted_json = sort_json_array(json_data)
 print(sorted_json)
+
+# ====================================================================================================================
 
 import json
 import subprocess
@@ -387,3 +401,162 @@ def process_text_and_execute_node(input_filepath):
 input_filepath = "q-multi-cursor-json.txt"
 
 process_text_and_execute_node(input_filepath)
+
+# ====================================================================================================================
+
+import zipfile
+import csv
+import io
+
+def sum_values_for_symbols(zip_file_path, target_symbols):
+    """
+    Downloads and processes files from a zip archive, summing values for specified symbols.
+
+    Args:
+        zip_file_path (str): Path to the zip file.
+        target_symbols (list or set): A list or set of symbols to search for.
+
+    Returns:
+        int: Sum of values associated with the target symbols.
+    """
+
+    target_symbols = set(target_symbols)  # Convert to set for efficient lookup
+    total_sum = 0
+
+    try:
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_file:
+            # Process data1.csv (CP-1252)
+            with zip_file.open('data1.csv') as file1:
+                decoded_file1 = io.TextIOWrapper(file1, encoding='cp1252')
+                reader1 = csv.reader(decoded_file1)
+                for row in reader1:
+                    if len(row) == 2 and row[0] in target_symbols:
+                        try:
+                            total_sum += int(row[1])
+                        except ValueError:
+                            pass
+
+            # Process data2.csv (UTF-8)
+            with zip_file.open('data2.csv') as file2:
+                decoded_file2 = io.TextIOWrapper(file2, encoding='utf-8')
+                reader2 = csv.reader(decoded_file2)
+                for row in reader2:
+                    if len(row) == 2 and row[0] in target_symbols:
+                        try:
+                            total_sum += int(row[1])
+                        except ValueError:
+                            pass
+
+            # Process data3.txt (UTF-16)
+            with zip_file.open('data3.txt') as file3:
+                decoded_file3 = io.TextIOWrapper(file3, encoding='utf-16')
+                reader3 = csv.reader(decoded_file3, delimiter='\t')
+                for row in reader3:
+                    if len(row) == 2 and row[0] in target_symbols:
+                        try:
+                            total_sum += int(row[1])
+                        except ValueError:
+                            pass
+
+    except FileNotFoundError:
+        print(f"Error: Zip file not found at {zip_file_path}")
+    except KeyError as e:
+        print(f"Error: File not found in zip archive: {e}")
+    except zipfile.BadZipFile:
+        print(f"Error: Invalid zip file: {zip_file_path}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+    return total_sum
+
+# Example Usage:
+zip_file_path = 'q-unicode-data.zip'  # Replace with your zip file path.
+target_symbols = ['‡', '‹', '—']
+result = sum_values_for_symbols(zip_file_path, target_symbols)
+print(f"Sum of values: {result}")
+
+target_symbols2 = ['‡', 'A'] #example of a different set of symbols.
+result2 = sum_values_for_symbols(zip_file_path, target_symbols2)
+print(f"Sum of values for target symbols 2: {result2}")
+
+# ====================================================================================================================
+
+import requests
+import json
+import secrets
+import os
+
+try:
+    token = secrets.ACCESS_TOKEN
+    print(f"Token: {token}")
+except KeyError:
+    print("Error: ACCESS_TOKEN not found.")
+except Exception as e:
+    print(f"An unexpected error occurred: {e}")
+
+def update_github_email_json_api(github_username, repo_name, email_id):
+    """
+    Updates the email.json file in a GitHub repository using the GitHub API.
+
+    Args:
+        github_username (str): Your GitHub username.
+        repo_name (str): The name of your GitHub repository.
+        email_id (str): The email address to add to the JSON.
+
+    Returns:
+        str: The raw GitHub URL of email.json, or None if an error occurs.
+    """
+    try:
+        github_token = secrets.ACCESS_TOKEN
+        headers = {
+            "Authorization": f"token {github_token}",
+            "Accept": "application/vnd.github.v3+json",
+        }
+
+        # Get the file's SHA and content
+        api_url = f"https://api.github.com/repos/{github_username}/{repo_name}/contents/email.json"
+        print(f"Fetching file from: {api_url}") # Debug print
+        response = requests.get(api_url, headers=headers)
+        print(f"Response status code: {response.status_code}") # Debug print
+        response.raise_for_status()
+        file_data = response.json()
+        sha = file_data["sha"]
+        content = file_data["content"]
+        decoded_content = json.loads(requests.compat.unquote(content).encode('utf-8').decode('utf-8'))
+
+        # Update the email
+        decoded_content["email"] = email_id
+
+        # Commit the changes
+        commit_data = {
+            "message": "Updated email_id",
+            "content": requests.compat.quote(json.dumps(decoded_content).encode('utf-8')),
+            "sha": sha,
+            "branch": "main",
+        }
+        print(f"Committing changes to: {api_url}") # Debug print
+        response = requests.put(api_url, headers=headers, json=commit_data)
+        print(f"Response status code: {response.status_code}") # Debug print
+        response.raise_for_status()
+
+        raw_url = f"https://raw.githubusercontent.com/{github_username}/{repo_name}/main/email.json"
+        return raw_url
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error during GitHub API request: {e}")
+    except json.JSONDecodeError as e:
+        print(f"JSON decoding error: {e}")
+    except KeyError as e:
+        print(f"Key error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+    return None
+
+# Example usage:
+repo_path = "https://github.com/danielrayappa2210/TDS"
+github_username = "danielrayappa2210"
+email_id = "test@example.com"
+url = update_github_email_json_api(repo_path, github_username, email_id)
+if url:
+    print(f"Raw GitHub URL: {url}")
