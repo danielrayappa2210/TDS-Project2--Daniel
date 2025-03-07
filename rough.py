@@ -153,55 +153,144 @@
 # result = move_rename_files("q-move-rename-files.zip")
 # print(result)
 
-def compare_files(zip_filepath):
-    """
-    Processes the given ZIP file by:
-      - Deleting the destination folder ("<zipfilename>_unzipped") if it exists,
-      - Creating a new destination folder,
-      - Extracting the ZIP file into that folder while preserving file timestamps,
-      - Reading 'a.txt' and 'b.txt' from the folder,
-      - Comparing the two files line by line to count how many lines differ,
-      - Returning the count of differing lines.
+# def compare_files(zip_filepath):
+#     """
+#     Processes the given ZIP file by:
+#       - Deleting the destination folder ("<zipfilename>_unzipped") if it exists,
+#       - Creating a new destination folder,
+#       - Extracting the ZIP file into that folder while preserving file timestamps,
+#       - Reading 'a.txt' and 'b.txt' from the folder,
+#       - Comparing the two files line by line to count how many lines differ,
+#       - Returning the count of differing lines.
     
-    Args:
-      zip_filepath (str): Path to the ZIP file.
+#     Args:
+#       zip_filepath (str): Path to the ZIP file.
     
-    Returns:
-      int: The number of lines that differ between a.txt and b.txt.
-    """
-    import os, zipfile, shutil
-    from datetime import datetime
+#     Returns:
+#       int: The number of lines that differ between a.txt and b.txt.
+#     """
+#     import os, zipfile, shutil
+#     from datetime import datetime
 
-    # Determine destination folder based on the zip filename.
-    base = os.path.splitext(os.path.basename(zip_filepath))[0]
-    dest_dir = base + "_unzipped"
+#     # Determine destination folder based on the zip filename.
+#     base = os.path.splitext(os.path.basename(zip_filepath))[0]
+#     dest_dir = base + "_unzipped"
     
-    # If the destination folder exists, delete it.
-    if os.path.exists(dest_dir):
-        shutil.rmtree(dest_dir)
-    # Create a new destination folder.
-    os.makedirs(dest_dir)
+#     # If the destination folder exists, delete it.
+#     if os.path.exists(dest_dir):
+#         shutil.rmtree(dest_dir)
+#     # Create a new destination folder.
+#     os.makedirs(dest_dir)
 
-    # Extract the ZIP file while preserving timestamps.
-    with zipfile.ZipFile(zip_filepath, 'r') as zf:
-        for zi in zf.infolist():
-            extracted_path = zf.extract(zi, dest_dir)
-            mod_time = datetime(*zi.date_time).timestamp()
-            os.utime(extracted_path, (mod_time, mod_time))
+#     # Extract the ZIP file while preserving timestamps.
+#     with zipfile.ZipFile(zip_filepath, 'r') as zf:
+#         for zi in zf.infolist():
+#             extracted_path = zf.extract(zi, dest_dir)
+#             mod_time = datetime(*zi.date_time).timestamp()
+#             os.utime(extracted_path, (mod_time, mod_time))
 
-    # Define paths for a.txt and b.txt.
-    a_path = os.path.join(dest_dir, "a.txt")
-    b_path = os.path.join(dest_dir, "b.txt")
+#     # Define paths for a.txt and b.txt.
+#     a_path = os.path.join(dest_dir, "a.txt")
+#     b_path = os.path.join(dest_dir, "b.txt")
 
-    # Compare the two files line by line.
-    diff_count = 0
-    with open(a_path, 'r') as fa, open(b_path, 'r') as fb:
-        for line_a, line_b in zip(fa, fb):
-            if line_a != line_b:
-                diff_count += 1
+#     # Compare the two files line by line.
+#     diff_count = 0
+#     with open(a_path, 'r') as fa, open(b_path, 'r') as fb:
+#         for line_a, line_b in zip(fa, fb):
+#             if line_a != line_b:
+#                 diff_count += 1
 
-    return diff_count
+#     return diff_count
 
-# Example usage:
-diff_lines = compare_files('q-compare-files.zip')
-print(diff_lines)
+# # Example usage:
+# diff_lines = compare_files('q-compare-files.zip')
+# print(diff_lines)
+
+# import requests
+# from bs4 import BeautifulSoup
+
+# # Replace with your URL
+# url = 'https://exam.sanand.workers.dev/tds-2025-01-ga1'
+# response = requests.get(url)
+
+# # Parse the HTML
+# soup = BeautifulSoup(response.content, 'html.parser')
+# print(soup)
+# # Find the first <input> tag with type="hidden"
+# hidden_input = soup.find('input', {'type': 'hidden'})
+
+# if hidden_input:
+#     # Extract the value attribute
+#     hidden_value = hidden_input.get('value')
+#     print("Hidden input value:", hidden_value)
+# else:
+#     print("No hidden input found.")
+
+promt = '''
+You are a python developer and expert in google colab. There is a small mistake in this python code. Correct this code. Be concise, return the full corrected code as a json.
+
+```python code
+import numpy as np
+from PIL import Image
+from google.colab import files
+import colorsys
+
+# There is a mistake in the line below. Fix it
+image = Image.open(list(files.upload().keys)[0])
+
+rgb = np.array(image) / 255.0
+lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
+light_pixels = np.sum(lightness > 0.455)
+print(f'Number of pixels with lightness > 0.455: {light_pixels}')
+```
+
+'''
+
+import os
+import requests
+import re
+import json
+
+# Retrieve the token from an environment variable or replace with your token directly
+AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbmllbC5wdXR0YUBncmFtZW5lci5jb20ifQ.7ecKOqropYfrVXzrdflh5zKRh8JnYi3luH7x3qGKiIs")
+
+url = "http://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {AIPROXY_TOKEN}"
+}
+
+data = {
+    "model": "gpt-4o-mini",
+    "messages": [
+        {"role": "user", "content": promt}
+    ]
+}
+
+response = requests.post(url, headers=headers, json=data)
+
+# print("Status Code:", response.status_code)
+# print("Response JSON:", response.json())
+code_str = response.json()['choices'][0]['message']['content']
+new_code_str = re.sub(r"```json|```","",code_str, re.IGNORECASE)
+code_json = json.loads(new_code_str.strip())
+print(code_json['code'])
+
+# from PIL import Image
+
+# def compress_image(input_path, output_path):
+#     try:
+#         # Open the image
+#         img = Image.open(input_path)
+        
+#         # Save the image in WebP format with lossless compression.
+#         # 'method=6' uses the slowest but most efficient compression.
+#         img.save(output_path, format='WEBP', lossless=True, method=6)
+#         print(f"Compressed image saved to {output_path}")
+#     except Exception as e:
+#         print("Error compressing image:", e)
+
+
+# input_path = "shapes.png"
+# output_path = "compressed_shapes.png"
+# compress_image(input_path, output_path)

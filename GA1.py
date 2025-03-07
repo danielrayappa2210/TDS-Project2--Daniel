@@ -44,7 +44,7 @@ def run_uv(email_address):
         return -1, None, str(e)
 
 # Example usage:
-email_to_use = "daniel.putta@gramener.com"
+email_to_use = "raghavendra.bobbili@gramener.com"
 return_code, json_output, error_message = run_uv(email_to_use)
 
 if return_code == 0:
@@ -134,7 +134,8 @@ def calculate_formula_in_sheet(web_app_url, formula):
 
 # Example usage:
 web_app_url = "https://script.google.com/macros/s/AKfycbzqSnAvZWmFgIrqofWolaflgaeiRz1Vi6toM1-EXX5fDCF6SffZMwV_hvs0i9VHLVs5/exec"  # Replace with your web app URL
-formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 4, 0), 1, 10))"
+# formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 4, 0), 1, 10))"
+formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 0, 4), 1, 10))"
 result = calculate_formula_in_sheet(web_app_url, formula)
 
 if result is not None:
@@ -226,9 +227,9 @@ target_day = "Wednesday"
 result = count_days_in_range(start_date, end_date, target_day)
 print(f"Number of {target_day}s between {start_date} and {end_date}: {result}")
 
-start_date2 = "2023-01-01"
-end_date2 = "2023-12-31"
-target_day2 = "Sunday"
+start_date2 = "1987-09-23"
+end_date2 = "2013-08-02"
+target_day2 = "Wednesday"
 
 result2 = count_days_in_range(start_date2, end_date2, target_day2)
 print(f"Number of {target_day2}s between {start_date2} and {end_date2}: {result2}")
@@ -321,7 +322,7 @@ def extract_answer_from_zip(zip_file_path):
             os.rmdir(temp_dir)
         return None
     
-zip_file_path = "q-extract-csv-zip.zip"  # Replace with your zip file path
+zip_file_path = "q-extract-csv-zip (1).zip"  # Replace with your zip file path
 answers = extract_answer_from_zip(zip_file_path)
 
 if answers:
@@ -366,7 +367,7 @@ def process_text_and_execute_node(input_filepath):
         input_filepath (str): The path to the input text file.
     """
     try:
-        with open("q-multi-cursor-json.txt", "r") as file:
+        with open(input_filepath, "r") as file:
             data = file.readlines()
             data = ['"'+line.replace("\n","").replace('=','\":\"')+'"' for line in data]
             output = ','.join(data)
@@ -388,7 +389,7 @@ def process_text_and_execute_node(input_filepath):
         print(f"An error occurred: {e}")
 
 # Example usage:
-input_filepath = "q-multi-cursor-json.txt"
+input_filepath = "q-multi-cursor-json (1).txt"
 
 process_text_and_execute_node(input_filepath)
 
@@ -460,12 +461,12 @@ def sum_values_for_symbols(zip_file_path, target_symbols):
     return total_sum
 
 # Example Usage:
-zip_file_path = 'q-unicode-data.zip'  # Replace with your zip file path.
+zip_file_path = 'q-unicode-data (1).zip'  # Replace with your zip file path.
 target_symbols = ['‡', '‹', '—']
 result = sum_values_for_symbols(zip_file_path, target_symbols)
 print(f"Sum of values: {result}")
 
-target_symbols2 = ['‡', 'A'] #example of a different set of symbols.
+target_symbols2 = ['…', '‘','„'] #example of a different set of symbols.
 result2 = sum_values_for_symbols(zip_file_path, target_symbols2)
 print(f"Sum of values for target symbols 2: {result2}")
 
