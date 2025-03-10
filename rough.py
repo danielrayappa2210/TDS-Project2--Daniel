@@ -226,71 +226,137 @@
 # else:
 #     print("No hidden input found.")
 
-promt = '''
-You are a python developer and expert in google colab. There is a small mistake in this python code. Correct this code. Be concise, return the full corrected code as a json.
+# promt_GA2_5 = '''
+# You are a python developer and expert in google colab. There is a small mistake in this python code. Correct this code. Be concise, return the full corrected code as a json.
 
-```python code
-import numpy as np
-from PIL import Image
-from google.colab import files
-import colorsys
+# ```python code
+# import numpy as np
+# from PIL import Image
+# from google.colab import files
+# import colorsys
 
-# There is a mistake in the line below. Fix it
-image = Image.open(list(files.upload().keys)[0])
+# # There is a mistake in the line below. Fix it
+# image = Image.open(list(files.upload().keys)[0])
 
-rgb = np.array(image) / 255.0
-lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
-light_pixels = np.sum(lightness > 0.455)
-print(f'Number of pixels with lightness > 0.455: {light_pixels}')
-```
+# rgb = np.array(image) / 255.0
+# lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
+# light_pixels = np.sum(lightness > 0.455)
+# print(f'Number of pixels with lightness > 0.455: {light_pixels}')
+# ```
 
-'''
+# '''
 
-import os
-import requests
-import re
-import json
+# import os
+# import requests
+# import re
+# import json
 
-# Retrieve the token from an environment variable or replace with your token directly
-AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbmllbC5wdXR0YUBncmFtZW5lci5jb20ifQ.7ecKOqropYfrVXzrdflh5zKRh8JnYi3luH7x3qGKiIs")
+# # Retrieve the token from an environment variable or replace with your token directly
+# AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN", "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImRhbmllbC5wdXR0YUBncmFtZW5lci5jb20ifQ.7ecKOqropYfrVXzrdflh5zKRh8JnYi3luH7x3qGKiIs")
 
-url = "http://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {AIPROXY_TOKEN}"
-}
+# url = "http://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
+# headers = {
+#     "Content-Type": "application/json",
+#     "Authorization": f"Bearer {AIPROXY_TOKEN}"
+# }
 
-data = {
-    "model": "gpt-4o-mini",
-    "messages": [
-        {"role": "user", "content": promt}
-    ]
-}
+# data = {
+#     "model": "gpt-4o-mini",
+#     "messages": [
+#         {"role": "user", "content": prompt_GA1_2}
+#     ]
+# }
 
-response = requests.post(url, headers=headers, json=data)
+# response = requests.post(url, headers=headers, json=data)
 
-# print("Status Code:", response.status_code)
-# print("Response JSON:", response.json())
-code_str = response.json()['choices'][0]['message']['content']
-new_code_str = re.sub(r"```json|```","",code_str, re.IGNORECASE)
-code_json = json.loads(new_code_str.strip())
-print(code_json['code'])
+# ========== for GA2_5 =================
+# code_str = response.json()['choices'][0]['message']['content']
+# new_code_str = re.sub(r"```json|```","",code_str, re.IGNORECASE)
+# code_json = json.loads(new_code_str.strip())
+# print(code_json['code'])
 
+# ========================================
+
+# import base64
+# from io import BytesIO
 # from PIL import Image
 
-# def compress_image(input_path, output_path):
-#     try:
-#         # Open the image
-#         img = Image.open(input_path)
-        
-#         # Save the image in WebP format with lossless compression.
-#         # 'method=6' uses the slowest but most efficient compression.
-#         img.save(output_path, format='WEBP', lossless=True, method=6)
-#         print(f"Compressed image saved to {output_path}")
-#     except Exception as e:
-#         print("Error compressing image:", e)
+# def compress_and_encode_image(input_path):
+#     """
+#     Compress an image losslessly into WebP format and return a Base64 encoded data URI.
+    
+#     Parameters:
+#       input_path (str): The file path to the source image.
+      
+#     Returns:
+#       str: A Base64 encoded data URI of the compressed image.
+#     """
+#     # Open the input image
+#     img = Image.open(input_path)
+    
+#     # Save the image in WebP format to an in-memory buffer using lossless compression with method=6
+#     buffer = BytesIO()
+#     img.save(buffer, format='WEBP', lossless=True, method=6)
+    
+#     # Get binary data from the buffer and encode it as Base64
+#     binary_data = buffer.getvalue()
+#     b64_data = base64.b64encode(binary_data).decode("utf-8")
+    
+#     # Construct and return the data URI
+#     return f"data:image/webp;base64,{b64_data}"
 
+# # Example usage:
+# data_uri = compress_and_encode_image("shapes.png")
+# print(data_uri)
 
-# input_path = "shapes.png"
-# output_path = "compressed_shapes.png"
-# compress_image(input_path, output_path)
+# import os
+# from datetime import datetime
+# from github import Github
+
+# def update_index_html(email):
+#     """
+#     Update the hard-coded index.html file in a hard-coded GitHub repository and branch.
+    
+#     This function writes two lines to the file:
+#       1. An HTML comment with the provided email:
+#          <!--email_off-->{email}<!--/email_off-->
+#       2. The current date and time.
+    
+#     Parameters:
+#       email (str): The email text to include in the file.
+      
+#     The GitHub token is read from the ACCESS_TOKEN environment variable.
+#     """
+
+#     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#     new_content = f"<!--email_off-->{email}<!--/email_off-->\n{current_time}"
+
+#     # Get token from environment variables
+#     token = os.getenv("ACCESS_TOKEN")
+#     if not token:
+#         raise EnvironmentError("ACCESS_TOKEN environment variable is not set.")
+    
+#     # Hard-coded settings
+#     repo_name = "danielrayappa2210/TDS-GA2"  # Replace with your GitHub username and repository name
+#     branch = "main"
+#     file_path = "index.html"
+    
+#     # Authenticate and get the repository
+#     g = Github(token)
+#     repos = g.get_user().get_repos()
+#     repo = g.get_repo(repo_name)
+    
+#     # Retrieve the file to update (needed for its SHA)
+#     file = repo.get_contents(file_path, ref=branch)
+    
+#     # Update the file with the new content
+#     commit_message = "Update index.html via Python script"
+#     update_response = repo.update_file(file.path, commit_message, new_content, file.sha, branch=branch)
+    
+#     return "https://danielrayappa2210.github.io/TDS-GA2/"
+
+# # Example usage:
+
+# email = "daniel.putta@gramener.com"
+# gh_page_url = update_index_html(email)
+# print(gh_page_url)

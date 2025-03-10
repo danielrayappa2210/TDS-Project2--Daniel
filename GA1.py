@@ -5,6 +5,32 @@ import os
 import re
 import shutil
 
+def run_code_status():
+    """
+    Reads a text file and returns its content as a string.
+
+    Args:
+        filepath (str): The path to the text file.
+
+    Returns:
+        str: The output of executing the "code --status in terminal"
+    """
+
+    filepath = "GA1_1.txt"
+    try:
+        with open(filepath, 'r', encoding='utf-8') as file:
+            content = file.read()
+            return content
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return None
+
+shell_output = run_code_status()
+print(shell_output)
+
+# ====================================================================================================================
+
+
 def run_uv(email_address):
     """
     Runs an HTTP request to httpbin.org with the given email address.
@@ -472,85 +498,50 @@ print(f"Sum of values for target symbols 2: {result2}")
 
 # ====================================================================================================================
 
-import requests
-import json
-import secrets
 import os
+from github import Github
 
-try:
-    token = secrets.ACCESS_TOKEN
-    print(f"Token: {token}")
-except KeyError:
-    print("Error: ACCESS_TOKEN not found.")
-except Exception as e:
-    print(f"An unexpected error occurred: {e}")
-
-def update_github_email_json_api(github_username, repo_name, email_id):
+def update_email_json(email):
     """
-    Updates the email.json file in a GitHub repository using the GitHub API.
-
-    Args:
-        github_username (str): Your GitHub username.
-        repo_name (str): The name of your GitHub repository.
-        email_id (str): The email address to add to the JSON.
-
-    Returns:
-        str: The raw GitHub URL of email.json, or None if an error occurs.
+    Update the hard-coded email.json file in a hard-coded GitHub repository and branch.
+    
+    This function commits a JSON file called email.json with the content:
+      {"email": "<input_email>"}
+    
+    The GitHub token is read from the GITHUB_TOKEN environment variable.
     """
-    try:
-        github_token = secrets.ACCESS_TOKEN
-        headers = {
-            "Authorization": f"token {github_token}",
-            "Accept": "application/vnd.github.v3+json",
-        }
 
-        # Get the file's SHA and content
-        api_url = f"https://api.github.com/repos/{github_username}/{repo_name}/contents/email.json"
-        print(f"Fetching file from: {api_url}") # Debug print
-        response = requests.get(api_url, headers=headers)
-        print(f"Response status code: {response.status_code}") # Debug print
-        response.raise_for_status()
-        file_data = response.json()
-        sha = file_data["sha"]
-        content = file_data["content"]
-        decoded_content = json.loads(requests.compat.unquote(content).encode('utf-8').decode('utf-8'))
+    new_content = json.dumps({"email": email}, indent=2)
 
-        # Update the email
-        decoded_content["email"] = email_id
-
-        # Commit the changes
-        commit_data = {
-            "message": "Updated email_id",
-            "content": requests.compat.quote(json.dumps(decoded_content).encode('utf-8')),
-            "sha": sha,
-            "branch": "main",
-        }
-        print(f"Committing changes to: {api_url}") # Debug print
-        response = requests.put(api_url, headers=headers, json=commit_data)
-        print(f"Response status code: {response.status_code}") # Debug print
-        response.raise_for_status()
-
-        raw_url = f"https://raw.githubusercontent.com/{github_username}/{repo_name}/main/email.json"
-        return raw_url
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error during GitHub API request: {e}")
-    except json.JSONDecodeError as e:
-        print(f"JSON decoding error: {e}")
-    except KeyError as e:
-        print(f"Key error: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-    return None
+    # Get token from environment variables
+    token = os.getenv("ACCESS_TOKEN")
+    if not token:
+        raise EnvironmentError("ACCESS_TOKEN environment variable is not set.")
+    
+    # Hard-coded settings
+    repo_name = "danielrayappa2210/TDS"  # Replace with your GitHub username and repository name
+    branch = "main"
+    file_path = "email.json"
+    
+    # Authenticate and get the repository
+    g = Github(token)
+    repos = g.get_user().get_repos()
+    repo = g.get_repo(repo_name)
+    
+    # Retrieve the file to update (needed for its SHA)
+    file = repo.get_contents(file_path, ref=branch)
+    
+    # Update the file with the new content
+    commit_message = "Update index.html via Python script"
+    update_response = repo.update_file(file.path, commit_message, new_content, file.sha, branch=branch)
+    
+    return "https://raw.githubusercontent.com/danielrayappa2210/TDS/refs/heads/main/email.json"
 
 # Example usage:
-repo_path = "https://github.com/danielrayappa2210/TDS"
-github_username = "danielrayappa2210"
-email_id = "test@example.com"
-url = update_github_email_json_api(repo_path, github_username, email_id)
-if url:
-    print(f"Raw GitHub URL: {url}")
+
+email = "daniel.putta@gramener.com"
+gh_page_url = update_email_json(email)
+print(gh_page_url)
 
 # ====================================================================================================================
 
