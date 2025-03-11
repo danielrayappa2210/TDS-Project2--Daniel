@@ -212,6 +212,62 @@ else:
 
 # ====================================================================================================================
 
+import re
+
+def excel_365_operations(formula):
+    # Extract arrays inside {}
+    arrays = re.findall(r"\{([^}]*)\}", formula)
+    array1 = list(map(int, arrays[0].split(','))) if len(arrays) > 0 else []
+    array2 = list(map(int, arrays[1].split(','))) if len(arrays) > 1 else []
+
+    # Extract standalone numbers (not inside arrays)
+    numbers = [int(num) for num in re.findall(r"[-]?\d+", formula)]
+    num3, num4 = numbers[-2:]  # Last two numbers (for TAKE function)
+
+    # SORTBY: Sort array1 based on values in array2
+    sorted_array = [x for _, x in sorted(zip(array2, array1))]
+
+    # TAKE: Take the first 'num4' elements after sorting
+    if num4 > 0:
+        taken_values = sorted_array[:num4]
+    elif num4 < 0:
+        taken_values = sorted_array[num4:]
+    else:
+        taken_values = []
+
+    # SUM: Compute sum of the taken values
+    result = sum(taken_values)
+
+    return result
+
+# Example usage
+formula = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))"
+final_sum = excel_365_operations(formula)
+
+print(final_sum)
+
+# ====================================================================================================================
+
+from bs4 import BeautifulSoup
+
+def get_hidden_input_value(html_path):
+    # Load the HTML file
+    with open(html_path, "r", encoding="utf-8") as file:
+        soup = BeautifulSoup(file, "html.parser")
+
+    # Find the hidden input element with type="hidden" and disabled attribute
+    hidden_input = soup.find("input", {"type": "hidden", "disabled": True})
+
+    # Get the value attribute
+    input_value = hidden_input["value"] if hidden_input else None
+
+    return input_value
+
+# Call the function with the HTML file path
+print(get_hidden_input_value("GA1_daniel.html"))
+
+# ====================================================================================================================
+
 import datetime
 
 def count_days_in_range(start_date_str, end_date_str, target_day_name):
@@ -418,6 +474,29 @@ def process_text_and_execute_node(input_filepath):
 input_filepath = "q-multi-cursor-json (1).txt"
 
 process_text_and_execute_node(input_filepath)
+
+# ====================================================================================================================
+
+from bs4 import BeautifulSoup
+
+def sum_data_values(html_path):
+    # Load the HTML file
+    with open(html_path, "r", encoding="utf-8") as file:
+        soup = BeautifulSoup(file, "html.parser")
+
+    # Find the hidden div with class 'd-none' and the exact title
+    hidden_element = soup.find("div", class_="d-none", title="This is the hidden element with the data-value attributes")
+
+    # Find all 'div' elements with class 'foo' inside the hidden div
+    foo_divs = hidden_element.find_all("div", class_="foo") if hidden_element else []
+
+    # Sum the data-value attributes
+    sum_value = sum(int(div.get("data-value", 0)) for div in foo_divs)
+
+    return sum_value
+
+# Call the function with the HTML file path
+print(sum_data_values("GA1.html"))
 
 # ====================================================================================================================
 

@@ -18,7 +18,7 @@ def fetch_authenticated_html(url, output_filename):
         time.sleep(3)  # Wait for the page to load
         
         # Inject a dummy user into localStorage to bypass the sign-in check
-        dummy_user = '{"email": "test@example.com"}'
+        dummy_user = '{"email": "daniel@gramener.com"}'
         driver.execute_script(f'window.localStorage.setItem("user", \'{dummy_user}\');')
         print("Dummy user set in localStorage.")
         
@@ -42,6 +42,7 @@ def fetch_authenticated_html(url, output_filename):
 
 if __name__ == '__main__':
     # Replace with your target URL
-    target_url = "https://exam.sanand.workers.dev/tds-2025-01-ga1#hq-use-excel"
-    output_file = "authenticated_page.html"
+    target_url = "https://exam.sanand.workers.dev/tds-2025-01-ga1#hq-use-excel" # GA1
+    # target_url = "https://exam.sanand.workers.dev/tds-2025-01-ga2#hq-use-colab" # GA2
+    output_file = "GA1.html"
     fetch_authenticated_html(target_url, output_file)

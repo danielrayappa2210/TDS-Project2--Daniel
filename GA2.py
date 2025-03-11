@@ -101,3 +101,93 @@ gh_page_url = update_index_html(email)
 print(gh_page_url)
 
 # ====================================================================================================================
+
+import hashlib
+
+def run_colab_authentication(email):
+    """Authenticates user in Colab, retrieves user info, and returns the hashed value."""
+
+    return hashlib.sha256(f"{email} 2025".encode()).hexdigest()[-5:]
+
+email = "daniel.putta@gramener.com"
+print(run_colab_authentication(email))
+
+# ====================================================================================================================
+
+import os
+import requests
+import base64
+import json
+
+def update_and_trigger_workflow(email):
+    """
+    Updates the GitHub Actions workflow file with the given email, 
+    commits the change using GitHub API, and triggers the workflow.
+    """
+    owner, repo, path, branch = "danielrayappa2210", "TDS", ".github/workflows/main.yml", "main"
+    token = os.getenv("ACCESS_TOKEN")
+    if not token: return print("Missing ACCESS_TOKEN")
+
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+    file_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+
+    # Get file SHA
+    res = requests.get(file_url, headers=headers)
+    if res.status_code != 200: return print("Failed to get file SHA")
+    sha = res.json()["sha"]
+
+    # Format new YAML content
+    content = f"""on:\n  workflow_dispatch:\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    \n    steps:\n      - name: {email}\n        run: echo "Hello, world!"\n"""
+    encoded_content = base64.b64encode(content.encode()).decode()
+
+    # Update file
+    update_data = {"message": "Updated workflow", "content": encoded_content, "sha": sha, "branch": branch}
+    if requests.put(file_url, headers=headers, data=json.dumps(update_data)).status_code != 200:
+        return print("Failed to update file")
+
+    # Trigger workflow
+    trigger_url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/main.yml/dispatches"
+    if requests.post(trigger_url, json={"ref": branch}, headers=headers).status_code == 204:
+        return "https://github.com/danielrayappa2210/TDS"
+    else:
+        print("Failed to trigger workflow")
+      
+# Example usage:
+
+gh_repo_url = update_and_trigger_workflow("user@example.com")
+print(gh_repo_url)
+
+# ====================================================================================================================
+
+import os
+import subprocess
+
+def build_and_push_image(tag):
+    # Read the Docker token from the environment.
+    token = os.getenv("DOCKER_TOKEN")
+    if not token:
+        raise EnvironmentError("DOCKER_TOKEN environment variable not set.")
+    
+    # Hardcoded Docker Hub username and repository.
+    username = "danielrayappa"
+    repo = "tdsga"
+    image_tag = f"{username}/{repo}:{tag}"
+    
+    # Log in to Docker Hub using your personal access token.
+    subprocess.run(["docker", "login", "--username", username, "--password", token], check=True)
+    
+    # Build the Docker image from the current directory.
+    subprocess.run(["docker", "build", "-t", image_tag, "."], check=True)
+    
+    # Push the Docker image to Docker Hub.
+    subprocess.run(["docker", "push", image_tag], check=True)
+    
+    # Print the Docker Hub repository URL.
+    return f"https://hub.docker.com/repository/docker/{username}/{repo}/general"
+    
+# Example usage:
+
+tag_input = "test"
+print(build_and_push_image(tag_input))
+
+# ====================================================================================================================

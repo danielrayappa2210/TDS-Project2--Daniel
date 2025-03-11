@@ -360,3 +360,169 @@
 # email = "daniel.putta@gramener.com"
 # gh_page_url = update_index_html(email)
 # print(gh_page_url)
+
+# ========================================
+
+# import os
+# import requests
+# import base64
+# import json
+
+# def update_and_trigger_workflow(email):
+#     """
+#     Updates the GitHub Actions workflow file with the given email, 
+#     commits the change using GitHub API, and triggers the workflow.
+#     """
+#     owner, repo, path, branch = "danielrayappa2210", "TDS", ".github/workflows/main.yml", "main"
+#     token = os.getenv("ACCESS_TOKEN")
+#     if not token: return print("Missing ACCESS_TOKEN")
+
+#     headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.v3+json"}
+#     file_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+
+#     # Get file SHA
+#     res = requests.get(file_url, headers=headers)
+#     if res.status_code != 200: return print("Failed to get file SHA")
+#     sha = res.json()["sha"]
+
+#     # Format new YAML content
+#     content = f"""on:\n  workflow_dispatch:\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    \n    steps:\n      - name: {email}\n        run: echo "Hello, world!"\n"""
+#     encoded_content = base64.b64encode(content.encode()).decode()
+
+#     # Update file
+#     update_data = {"message": "Updated workflow", "content": encoded_content, "sha": sha, "branch": branch}
+#     if requests.put(file_url, headers=headers, data=json.dumps(update_data)).status_code != 200:
+#         return print("Failed to update file")
+
+#     # Trigger workflow
+#     trigger_url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/main.yml/dispatches"
+#     if requests.post(trigger_url, json={"ref": branch}, headers=headers).status_code == 204:
+#         return "https://github.com/danielrayappa2210/TDS"
+#     else:
+#         print("Failed to trigger workflow")
+
+
+# gh_repo_url = update_and_trigger_workflow("user@example.com")
+# print(gh_repo_url)
+
+# ========================================
+
+# import hashlib
+
+# email = "daniel.putta@gramener.com"
+
+# # Compute fake hash
+# hashed_value = hashlib.sha256(f"{email} 2025".encode()).hexdigest()[-5:]
+# print(f"Fake Hashed Value: {hashed_value}")
+
+# ========================================
+
+# import os
+# import subprocess
+
+# def build_and_push_image(tag):
+#     # Read the Docker token from the environment.
+#     token = os.getenv("DOCKER_TOKEN")
+#     if not token:
+#         raise EnvironmentError("DOCKER_TOKEN environment variable not set.")
+    
+#     # Hardcoded Docker Hub username and repository.
+#     username = "danielrayappa"
+#     repo = "tdsga"
+#     image_tag = f"{username}/{repo}:{tag}"
+    
+#     # Log in to Docker Hub using your personal access token.
+#     subprocess.run(["docker", "login", "--username", username, "--password", token], check=True)
+    
+#     # Build the Docker image from the current directory.
+#     subprocess.run(["docker", "build", "-t", image_tag, "."], check=True)
+    
+#     # Push the Docker image to Docker Hub.
+#     subprocess.run(["docker", "push", image_tag], check=True)
+    
+#     # Print the Docker Hub repository URL.
+#     return f"https://hub.docker.com/repository/docker/{username}/{repo}/general"
+    
+# # Example usage:
+
+# tag_input = "test"
+# print(build_and_push_image(tag_input))
+
+# ========================================
+
+# from bs4 import BeautifulSoup
+
+# def sum_data_values(html_path):
+#     # Load the HTML file
+#     with open(html_path, "r", encoding="utf-8") as file:
+#         soup = BeautifulSoup(file, "html.parser")
+
+#     # Find the hidden div with class 'd-none' and the exact title
+#     hidden_element = soup.find("div", class_="d-none", title="This is the hidden element with the data-value attributes")
+
+#     # Find all 'div' elements with class 'foo' inside the hidden div
+#     foo_divs = hidden_element.find_all("div", class_="foo") if hidden_element else []
+
+#     # Sum the data-value attributes
+#     sum_value = sum(int(div.get("data-value", 0)) for div in foo_divs)
+
+#     return sum_value
+
+# # Call the function with the HTML file path
+# print(sum_data_values("GA1.html"))
+
+# ========================================
+
+# from bs4 import BeautifulSoup
+
+# def get_hidden_input_value(html_path):
+#     # Load the HTML file
+#     with open(html_path, "r", encoding="utf-8") as file:
+#         soup = BeautifulSoup(file, "html.parser")
+
+#     # Find the hidden input element with type="hidden" and disabled attribute
+#     hidden_input = soup.find("input", {"type": "hidden", "disabled": True})
+
+#     # Get the value attribute
+#     input_value = hidden_input["value"] if hidden_input else None
+
+#     return input_value
+
+# # Call the function with the HTML file path
+# print(get_hidden_input_value("GA1_daniel.html"))
+
+# ========================================
+
+# import re
+
+# def excel_365_operations(formula):
+#     # Extract arrays inside {}
+#     arrays = re.findall(r"\{([^}]*)\}", formula)
+#     array1 = list(map(int, arrays[0].split(','))) if len(arrays) > 0 else []
+#     array2 = list(map(int, arrays[1].split(','))) if len(arrays) > 1 else []
+
+#     # Extract standalone numbers (not inside arrays)
+#     numbers = [int(num) for num in re.findall(r"[-]?\d+", formula)]
+#     num3, num4 = numbers[-2:]  # Last two numbers (for TAKE function)
+
+#     # SORTBY: Sort array1 based on values in array2
+#     sorted_array = [x for _, x in sorted(zip(array2, array1))]
+
+#     # TAKE: Take the first 'num4' elements after sorting
+#     if num4 > 0:
+#         taken_values = sorted_array[:num4]
+#     elif num4 < 0:
+#         taken_values = sorted_array[num4:]
+#     else:
+#         taken_values = []
+
+#     # SUM: Compute sum of the taken values
+#     result = sum(taken_values)
+
+#     return result
+
+# # Example usage
+# formula = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))"
+# final_sum = excel_365_operations(formula)
+
+# print("Final SUM:", final_sum)
