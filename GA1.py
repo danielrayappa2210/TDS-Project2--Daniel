@@ -7,10 +7,7 @@ import shutil
 
 def run_code_status():
     """
-    Reads a text file and returns its content as a string.
-
-    Args:
-        filepath (str): The path to the text file.
+    Executes the 'code -s' command in the terminal (or Command Prompt) to retrieve the status of Visual Studio Code.
 
     Returns:
         str: The output of executing the "code --status in terminal"
@@ -60,30 +57,18 @@ def run_uv(email_address):
         if return_code == 0:
             try:
                 json_output = json.loads(stdout)
-                return return_code, json_output, None
+                return json_output['args']['email']
             except json.JSONDecodeError:
-                return return_code, None, "Command output is not valid JSON."
+                return None
         else:
-            return return_code, None, stderr
+            return None
 
     except Exception as e:
-        return -1, None, str(e)
+        return None
 
 # Example usage:
 email_to_use = "raghavendra.bobbili@gramener.com"
-return_code, json_output, error_message = run_uv(email_to_use)
-
-if return_code == 0:
-    print("Request successful!")
-    print(json.dumps(json_output, indent=4))
-    print(f"Email from response: {json_output['args']['email']}")
-
-elif error_message:
-    print(f"Request failed with return code: {return_code}")
-    print(f"Error: {error_message}")
-
-else:
-    print(f"Request failed with return code: {return_code}")
+print(run_uv(email_to_use))
 
 # ====================================================================================================================
 
@@ -115,31 +100,29 @@ def run_prettier():
         stderr = process.stderr.strip() if process.stderr else ""
         return_code = process.returncode
 
-        return return_code, stdout, stderr
+        return stdout
     except Exception as e:
         print(f"An error occurred: {e}")
-        return 1, "", str(e)
+        return ""
 
-return_code, output, error_message = run_prettier()
-
-if return_code == 0:
-    print(output)
-else:
-    print(f"Request failed with return code: {return_code}")
+print(run_prettier())
 
 # ====================================================================================================================
 
-def calculate_formula_in_sheet(web_app_url, formula):
+def calculate_formula_in_google_sheet(formula):
     """
-    Puts a formula in A1, computes in B1, and returns the result.
+    Puts a formula in a google sheet at A1 cell, computes in B1, and returns the result from B1.
 
     Args:
-        web_app_url: The URL of your Google Apps Script web app.
         formula: The formula string.
 
     Returns:
         The computed result, or None if an error occurs.
     """
+
+    # The URL of your Google Apps Script web app.
+    web_app_url = "https://script.google.com/macros/s/AKfycbzqSnAvZWmFgIrqofWolaflgaeiRz1Vi6toM1-EXX5fDCF6SffZMwV_hvs0i9VHLVs5/exec"
+
     try:
         data = {"formula": formula}
         headers = {"Content-Type": "application/json"}
@@ -159,62 +142,29 @@ def calculate_formula_in_sheet(web_app_url, formula):
         return None
 
 # Example usage:
-web_app_url = "https://script.google.com/macros/s/AKfycbzqSnAvZWmFgIrqofWolaflgaeiRz1Vi6toM1-EXX5fDCF6SffZMwV_hvs0i9VHLVs5/exec"  # Replace with your web app URL
 # formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 4, 0), 1, 10))"
 formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 0, 4), 1, 10))"
-result = calculate_formula_in_sheet(web_app_url, formula)
-
-if result is not None:
-    print(f"Result of formula '{formula}': {result}")
-
-# ====================================================================================================================
-
-import openpyxl
-from xlcalculator import Model, parser, Evaluator
-
-def evaluate_formula_string(formula_string):
-    """
-    Evaluates an Excel formula string directly.
-
-    Args:
-        formula_string (str): The Excel formula as a string (e.g., "=SUM(A1:A10)").
-
-    Returns:
-        The result of the formula evaluation, or None if an error occurs.
-    """
-    try:
-        model = Model()
-        parser = parser(model)
-        parser.parse("=SUM(1,2,3)") #Very simple formula.
-        evaluator = Evaluator(model)
-        result = evaluator.evaluate("A1", {})
-        print(f"Result: {result}")
-    except Exception as e:
-        print(f"Error: {e}")
-
-# Example usage:
-# formula_to_evaluate = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))" #example of your formula
-
-# result = evaluate_formula_string(formula_to_evaluate)
-
-# if result is not None:
-#     print(f"The result of the formula is: {result}")
-# else:
-#     print("Could not evaluate the formula.")
-
-# Example of a simpler formula
-simple_formula = "=SUM(1,2,3)"
-simple_result = evaluate_formula_string(simple_formula)
-if simple_result is not None:
-    print(f"The result of the simple formula is: {simple_result}")
-else:
-    print("Could not evaluate the formula.")
+print(calculate_formula_in_google_sheet(formula))
 
 # ====================================================================================================================
 
 import re
 
-def excel_365_operations(formula):
+def calculate_formula_in_excel_365_sheet(formula):
+    """
+    Evaluates a given Excel formula and returns its output.
+
+    This function inserts the provided formula into an Excel sheet, calculates its result, 
+    and retrieves the output. It is designed for use with Office 365, where dynamic formulas 
+    are supported.
+
+    Args:
+        formula (str): The Excel formula to be evaluated as a string.
+
+    Returns:
+        str: The output of the evaluated formula.
+    """
+
     # Extract arrays inside {}
     arrays = re.findall(r"\{([^}]*)\}", formula)
     array1 = list(map(int, arrays[0].split(','))) if len(arrays) > 0 else []
@@ -236,21 +186,32 @@ def excel_365_operations(formula):
         taken_values = []
 
     # SUM: Compute sum of the taken values
-    result = sum(taken_values)
+    result = str(sum(taken_values))
 
     return result
 
 # Example usage
 formula = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))"
-final_sum = excel_365_operations(formula)
-
-print(final_sum)
+print(calculate_formula_in_excel_365_sheet(formula))
 
 # ====================================================================================================================
 
 from bs4 import BeautifulSoup
 
-def get_hidden_input_value(html_path):
+def extract_hidden_input_value(html_path):
+    """
+    Extracts the value of a hidden input field from an HTML file.
+
+    This function parses the given HTML file to locate the first hidden input field 
+    and retrieves its 'value' attribute.
+
+    Args:
+        html_path (str): The path to the HTML file containing the hidden input field.
+
+    Returns:
+        str: The value of the hidden input field.
+    """
+
     # Load the HTML file
     with open(html_path, "r", encoding="utf-8") as file:
         soup = BeautifulSoup(file, "html.parser")
@@ -264,7 +225,7 @@ def get_hidden_input_value(html_path):
     return input_value
 
 # Call the function with the HTML file path
-print(get_hidden_input_value("GA1_daniel.html"))
+print(extract_hidden_input_value("GA1_daniel.html"))
 
 # ====================================================================================================================
 
@@ -322,16 +283,23 @@ import zipfile
 import os
 import pandas as pd
 
-def extract_answer_from_zip(zip_file_path):
+def get_answer_from_csv(zip_file_path: str) -> str:
     """
-    Unzips a zip file, reads a CSV within it, and extracts the 'answer' column.
+    Extracts and returns the value from the "answer" column in the extract.csv file 
+    inside a given ZIP archive.
+
+    This function:
+    1. Extracts the ZIP file.
+    2. Searches for "extract.csv".
+    3. Reads the CSV file and retrieves the value from the "answer" column.
 
     Args:
-        zip_file_path (str): The path to the zip file.
+        zip_file_path (str): The file path to the ZIP archive.
 
     Returns:
-        list: A list of values from the 'answer' column, or None if an error occurs.
+        str: The value in the "answer" column of extract.csv.
     """
+
     try:
         with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
             # Extract all files to a temporary directory
@@ -361,7 +329,7 @@ def extract_answer_from_zip(zip_file_path):
                         os.remove(file_path)
                     os.rmdir(temp_dir)
 
-                    return answers
+                    return answers[0]
                 else:
                     print("Error: 'answer' column not found in the CSV.")
                     # Clean up the temporary directory
@@ -405,25 +373,22 @@ def extract_answer_from_zip(zip_file_path):
         return None
     
 zip_file_path = "q-extract-csv-zip (1).zip"  # Replace with your zip file path
-answers = extract_answer_from_zip(zip_file_path)
-
-if answers:
-    print("Answers:", answers)
-else:
-    print("Failed to extract answers.")
+print(get_answer_from_csv(zip_file_path))
 
 # ====================================================================================================================
 
-def sort_json_array(json_string):
+def sort_json_by_age_and_name(json_string: str) -> str:
     """
-    Sorts a JSON array of objects by age, then by name in case of a tie.
+    Sorts a JSON array of objects by the 'age' field in ascending order. 
+    In case of a tie, sorts by the 'name' field alphabetically.
 
     Args:
-        json_string: A JSON string representing an array of objects.
+        json_string (str): The input JSON string containing an array of objects.
 
     Returns:
-        A JSON string representing the sorted array, without spaces or newlines.
+        str: The sorted JSON array as a compact string without spaces or newlines.
     """
+
     try:
         data = json.loads(json_string)
         sorted_data = sorted(data, key=lambda x: (x.get("age"), x.get("name")))
@@ -433,7 +398,7 @@ def sort_json_array(json_string):
 
 # Example Usage (replace with your JSON string):
 json_data = '[{"name":"Alice","age":26},{"name":"Bob","age":10},{"name":"Charlie","age":72},{"name":"David","age":56},{"name":"Emma","age":55},{"name":"Frank","age":54},{"name":"Grace","age":56},{"name":"Henry","age":18},{"name":"Ivy","age":36},{"name":"Jack","age":9},{"name":"Karen","age":95},{"name":"Liam","age":86},{"name":"Mary","age":97},{"name":"Nora","age":11},{"name":"Oscar","age":22},{"name":"Paul","age":84}]'
-sorted_json = sort_json_array(json_data)
+sorted_json = sort_json_by_age_and_name(json_data)
 print(sorted_json)
 
 # ====================================================================================================================
@@ -441,15 +406,25 @@ print(sorted_json)
 import json
 import subprocess
 
-def process_text_and_execute_node(input_filepath):
+def convert_txt_to_json_and_hash(txt_filepath: str) -> str:
     """
-    Reads a text file, converts it to JSON, and executes a Node.js command with the JSON string.
+    Reads a text file containing key=value pairs, converts it into a single JSON object, 
+    and computes its hash using the online tool at tools-in-data-science.pages.dev/jsonhash.
+
+    This function:
+    1. Reads the text file.
+    2. Parses key=value pairs and converts them into a JSON object.
+    3. Returns the computed hash after pasting the JSON into the tool.
 
     Args:
-        input_filepath (str): The path to the input text file.
+        txt_filepath (str): The file path to the text file containing key=value pairs.
+
+    Returns:
+        str: The hash generated by tools-in-data-science.pages.dev/jsonhash.
     """
+
     try:
-        with open(input_filepath, "r") as file:
+        with open(txt_filepath, "r") as file:
             data = file.readlines()
             data = ['"'+line.replace("\n","").replace('=','\":\"')+'"' for line in data]
             output = ','.join(data)
@@ -459,27 +434,47 @@ def process_text_and_execute_node(input_filepath):
         result = subprocess.run(command, capture_output=True, text=True)
 
         if result.returncode == 0:
-            print("Node.js command executed successfully.")
-            print("Output:", result.stdout)
+            return result.stdout
         else:
-            print("Node.js command failed.")
-            print("Error:", result.stderr)
+            return None
 
     except FileNotFoundError:
-        print(f"Error: File not found at {input_filepath}")
+        print(f"Error: File not found at {txt_filepath}")
+        return None
     except Exception as e:
         print(f"An error occurred: {e}")
+        return None
 
 # Example usage:
 input_filepath = "q-multi-cursor-json (1).txt"
-
-process_text_and_execute_node(input_filepath)
+print(convert_txt_to_json_and_hash(input_filepath))
 
 # ====================================================================================================================
 
 from bs4 import BeautifulSoup
 
-def sum_data_values(html_path):
+def sum_data_values_of_divs(html_path: str) -> int:
+    """
+    Parses an HTML file, finds all <div> elements with the class 'foo' inside a hidden element, 
+    and sums their 'data-value' attributes.
+
+    This function:
+    1. Reads the HTML file.
+    2. Selects all <div> elements with the class 'foo' inside a hidden element.
+    3. Extracts their 'data-value' attributes and calculates the sum.
+
+    Args:
+        html_path (str): The file path to the HTML file.
+
+    Returns:
+        int: The sum of the 'data-value' attributes of the matching <div> elements.
+
+    Raises:
+        FileNotFoundError: If the specified HTML file does not exist.
+        ValueError: If 'data-value' attributes are missing or not numeric.
+        ImportError: If the required HTML parsing library (e.g., BeautifulSoup) is not installed.
+    """
+
     # Load the HTML file
     with open(html_path, "r", encoding="utf-8") as file:
         soup = BeautifulSoup(file, "html.parser")
@@ -496,7 +491,7 @@ def sum_data_values(html_path):
     return sum_value
 
 # Call the function with the HTML file path
-print(sum_data_values("GA1.html"))
+print(sum_data_values_of_divs("GA1.html"))
 
 # ====================================================================================================================
 
@@ -504,16 +499,27 @@ import zipfile
 import csv
 import io
 
-def sum_values_for_symbols(zip_file_path, target_symbols):
+def sum_values_for_symbols(zip_file_path: str, target_symbols: list) -> int:
     """
-    Downloads and processes files from a zip archive, summing values for specified symbols.
+    Reads and processes three differently encoded files, summing values for specific symbols 
+    across all files.
+
+    The function handles:
+    - data1.csv (CP-1252 encoding, comma-separated)
+    - data2.csv (UTF-8 encoding, comma-separated)
+    - data3.txt (UTF-16 encoding, tab-separated)
+
+    Each file contains two columns: 'symbol' and 'value'. This function:
+    1. Reads and decodes each file appropriately based on its encoding.
+    2. Filters rows where the 'symbol' column matches one of the target symbols.
+    3. Sums up the corresponding 'value' column.
 
     Args:
-        zip_file_path (str): Path to the zip file.
-        target_symbols (list or set): A list or set of symbols to search for.
+        zip_file_path (str): The file path to the directory containing the three data files.
+        target_symbols (list): A list of symbols to filter and sum values for.
 
     Returns:
-        int: Sum of values associated with the target symbols.
+        int: The total sum of values for the specified symbols.
     """
 
     target_symbols = set(target_symbols)  # Convert to set for efficient lookup
@@ -580,17 +586,25 @@ print(f"Sum of values for target symbols 2: {result2}")
 import os
 from github import Github
 
-def update_email_json(email):
+def create_github_repo_and_push_json(email_id: str) -> str:
     """
-    Update the hard-coded email.json file in a hard-coded GitHub repository and branch.
-    
-    This function commits a JSON file called email.json with the content:
-      {"email": "<input_email>"}
-    
-    The GitHub token is read from the GITHUB_TOKEN environment variable.
+    Automates the process of creating a GitHub repository, committing a JSON file, 
+    and pushing it to GitHub.
+
+    This function:
+    1. Creates a JSON file named 'email.json' with the structure: {"email": email_id}.
+    2. Initializes a new GitHub repository (public).
+    3. Commits and pushes the JSON file to the repository.
+    4. Returns the raw GitHub URL of the uploaded file.
+
+    Args:
+        email_id (str): The email address to be stored in the JSON file.
+
+    Returns:
+        str: The raw GitHub URL of email.json.
     """
 
-    new_content = json.dumps({"email": email}, indent=2)
+    new_content = json.dumps({"email": email_id}, indent=2)
 
     # Get token from environment variables
     token = os.getenv("ACCESS_TOKEN")
@@ -619,27 +633,31 @@ def update_email_json(email):
 # Example usage:
 
 email = "daniel.putta@gramener.com"
-gh_page_url = update_email_json(email)
+gh_page_url = create_github_repo_and_push_json(email)
 print(gh_page_url)
 
 # ====================================================================================================================
 
-def replace_across_files(zip_filepath):
+import os, zipfile, re, subprocess
+from datetime import datetime
+
+def replace_iitm_and_compute_sha256(zip_filepath: str) -> str:
     """
-    Processes the given ZIP file by:
-      - Extracting it into a folder named "<zipfilename>_unzipped" while preserving file timestamps,
-      - Recursively replacing all occurrences of "IITM" (in any case) with "IIT Madras" in all files,
-      - Running the shell command 'cat * | sha256sum' in the extracted folder,
-      - Returning the output of the shell command (the SHA256 checksum).
+    Extracts a ZIP archive, replaces all occurrences of 'IITM' (case-insensitive) with 'IIT Madras' 
+    in all files, and computes the SHA-256 checksum of the concatenated file contents.
+
+    This function:
+    1. Extracts the ZIP archive into a new folder.
+    2. Recursively processes all files, replacing 'IITM' (case-insensitive) with 'IIT Madras'.
+    3. Preserves original line endings.
+    4. Computes the SHA-256 hash of all file contents using the equivalent of `cat * | sha256sum`.
 
     Args:
-      zip_filepath (str): Path to the ZIP file to process.
+        zip_filepath (str): The file path to the ZIP archive.
 
     Returns:
-      str: The output of the 'cat * | sha256sum' command (i.e., the SHA256 checksum).
+        str: The computed SHA-256 hash.
     """
-    import os, zipfile, re, subprocess
-    from datetime import datetime
 
     # Create a destination folder named "<zipfilename>_unzipped"
     dest_dir = os.path.splitext(os.path.basename(zip_filepath))[0] + "_unzipped"
@@ -669,7 +687,7 @@ def replace_across_files(zip_filepath):
     output = subprocess.check_output("cat * | sha256sum", shell=True, cwd=dest_dir, text=True).strip()
     return output
 
-output = replace_across_files('q-replace-across-files.zip')
+output = replace_iitm_and_compute_sha256('q-replace-across-files.zip')
 print(output)
 
 # ====================================================================================================================

@@ -114,6 +114,23 @@ print(run_colab_authentication(email))
 
 # ====================================================================================================================
 
+import numpy as np
+from PIL import Image
+import colorsys
+
+def run_image_library_colab(image_path, threshold):
+    rgb = np.array(Image.open(image_path)) / 255.0
+    lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
+    return np.sum(lightness > threshold)
+
+image_path = "lenna.webp"
+threshold = 0.455
+
+light_pixels = run_image_library_colab(image_path, threshold)
+print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
+
+# ====================================================================================================================
+
 import os
 import requests
 import base64

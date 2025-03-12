@@ -526,3 +526,22 @@
 # final_sum = excel_365_operations(formula)
 
 # print("Final SUM:", final_sum)
+
+# ========================================
+
+# import numpy as np
+# from PIL import Image
+# import colorsys
+
+# def count_light_pixels(image_path, threshold):
+#     rgb = np.array(Image.open(image_path)) / 255.0
+#     lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
+#     return np.sum(lightness > threshold)
+
+# image_path = "lenna.webp"
+# threshold = 0.455
+
+# light_pixels = count_light_pixels(image_path, threshold)
+# print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
+
+# ========================================
