@@ -1,7 +1,7 @@
 def documentation_markdown():
     # Read markdown content from a file named "content.txt"
     try:
-        with open('content.txt', 'r', encoding='utf-8') as file:
+        with open('GA2_1.txt', 'r', encoding='utf-8') as file:
             markdown_text = file.read()
     except FileNotFoundError:
         print("Error: 'content.txt' not found.")
