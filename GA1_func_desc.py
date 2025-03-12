@@ -340,3 +340,83 @@ GA1_tools = [
         }
     }
 ]
+
+from GA2 import *
+
+# similar to GA1_tools for functions in GA1.py, create GA2_tools for functions in GA2.py
+GA2_tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "documentation_markdown",
+            "description": "Generates a Markdown-formatted analysis of daily step counts over a week, comparing trends over time and with friends.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "compress_and_encode_image",
+            "description": "Compresses an image losslessly into WebP format and returns a Base64 encoded data URI.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "input_path": {
+                        "type": "string",
+                        "description": "The file path to the source image."
+                    }
+                },
+                "required": ["input_path"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "update_index_html",
+            "description": "Update the index.html file in a GitHub repository with the new content",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "description": "The email address to include in the HTML comment."
+                    }
+                },
+                "required": ["email"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "run_colab_authentication",
+            "description": "Authenticates user in Colab, retrieves user info, and returns the hashed value.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "user_info": {
+                        "type": "string",
+                        "description": "The user information to be hashed."
+                    }
+                },
+                "required": ["user_info"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        
+    }
+]

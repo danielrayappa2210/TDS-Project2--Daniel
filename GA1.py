@@ -128,7 +128,6 @@ def calculate_formula_in_google_sheet(formula):
         headers = {"Content-Type": "application/json"}
         response = requests.post(web_app_url, data=json.dumps(data), headers=headers)
         response.raise_for_status()
-        print("Raw Response:", response.text)  # Add this line
         result = response.json().get("result")
         return result
     except requests.exceptions.RequestException as e:
@@ -764,6 +763,7 @@ def compare_files(zip_filepath):
 
     return diff_count
 
+# ====================================================================================================================
 # Testing the functions
 
 if __name__ == "__main__":
@@ -796,7 +796,7 @@ if __name__ == "__main__":
     target_day = "Wednesday"
 
     result = count_days_in_range(start_date, end_date, target_day)
-    print(f"Number of {target_day}s between {start_date} and {end_date}: {result}")
+    print(result)
 
     print("=================Q8====================")
     zip_file_path = "./test_data/q-extract-csv-zip (1).zip"  # Replace with your zip file path
@@ -818,7 +818,7 @@ if __name__ == "__main__":
     zip_file_path = './test_data/q-unicode-data (1).zip'  # Replace with your zip file path.
     target_symbols = ['‡', '‹', '—']
     result = sum_values_for_symbols(zip_file_path, target_symbols)
-    print(f"Sum of values: {result}")
+    print(result)
 
     print("=================Q13===================")
     email = "daniel.putta@gramener.com"

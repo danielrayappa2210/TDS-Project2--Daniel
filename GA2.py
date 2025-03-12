@@ -1,5 +1,26 @@
-def documentation_markdown():
-    # Read markdown content from a file named "content.txt"
+def documentation_markdown() -> str:
+    """
+    Generates a Markdown-formatted analysis of daily step counts over a week, 
+    comparing trends over time and with friends.
+
+    The generated Markdown content includes:
+    - A top-level heading (# Introduction)
+    - A subheading (## Methodology)
+    - **Bold text** for emphasis
+    - *Italic text* for additional notes
+    - An `inline code` example
+    - A fenced code block demonstrating Python code
+    - A bulleted list summarizing key points
+    - A numbered list outlining the analysis steps
+    - A table displaying sample step data
+    - A hyperlink directing to a related resource
+    - An image placeholder for a steps tracking graph
+    - A blockquote for an insightful remark
+
+    Returns:
+        str: The Markdown content as a string.
+    """
+    
     try:
         with open('GA2_1.txt', 'r', encoding='utf-8') as file:
             markdown_text = file.read()
@@ -9,8 +30,6 @@ def documentation_markdown():
     # Optionally process the markdown_text if needed.
     # For this example, we'll simply output it.
     print(markdown_text)
-
-documentation_markdown()
 
 # ====================================================================================================================
 
@@ -42,10 +61,6 @@ def compress_and_encode_image(input_path):
     # Construct and return the data URI
     return f"data:image/webp;base64,{b64_data}"
 
-# Example usage:
-data_uri = compress_and_encode_image("shapes.png")
-print(data_uri)
-
 # ====================================================================================================================
 
 import os
@@ -54,7 +69,7 @@ from github import Github
 
 def update_index_html(email):
     """
-    Update the hard-coded index.html file in a hard-coded GitHub repository and branch.
+    Update the index.html file in a GitHub repository with the new content.
     
     This function writes two lines to the file:
       1. An HTML comment with the provided email:
@@ -94,12 +109,6 @@ def update_index_html(email):
     
     return "https://danielrayappa2210.github.io/TDS-GA2/"
 
-# Example usage:
-
-email = "daniel.putta@gramener.com"
-gh_page_url = update_index_html(email)
-print(gh_page_url)
-
 # ====================================================================================================================
 
 import hashlib
@@ -108,9 +117,6 @@ def run_colab_authentication(email):
     """Authenticates user in Colab, retrieves user info, and returns the hashed value."""
 
     return hashlib.sha256(f"{email} 2025".encode()).hexdigest()[-5:]
-
-email = "daniel.putta@gramener.com"
-print(run_colab_authentication(email))
 
 # ====================================================================================================================
 
@@ -122,12 +128,6 @@ def run_image_library_colab(image_path, threshold):
     rgb = np.array(Image.open(image_path)) / 255.0
     lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
     return np.sum(lightness > threshold)
-
-image_path = "lenna.webp"
-threshold = 0.455
-
-light_pixels = run_image_library_colab(image_path, threshold)
-print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
 
 # ====================================================================================================================
 
@@ -168,11 +168,6 @@ def update_and_trigger_workflow(email):
         return "https://github.com/danielrayappa2210/TDS"
     else:
         print("Failed to trigger workflow")
-      
-# Example usage:
-
-gh_repo_url = update_and_trigger_workflow("user@example.com")
-print(gh_repo_url)
 
 # ====================================================================================================================
 
@@ -191,20 +186,49 @@ def build_and_push_image(tag):
     image_tag = f"{username}/{repo}:{tag}"
     
     # Log in to Docker Hub using your personal access token.
-    subprocess.run(["docker", "login", "--username", username, "--password", token], check=True)
+    subprocess.run(["docker", "login", "--username", username, "--password", token], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     
     # Build the Docker image from the current directory.
-    subprocess.run(["docker", "build", "-t", image_tag, "."], check=True)
+    subprocess.run(["docker", "build", "-t", image_tag, "."], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     
     # Push the Docker image to Docker Hub.
-    subprocess.run(["docker", "push", image_tag], check=True)
+    subprocess.run(["docker", "push", image_tag], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     
     # Print the Docker Hub repository URL.
     return f"https://hub.docker.com/repository/docker/{username}/{repo}/general"
     
-# Example usage:
-
-tag_input = "test"
-print(build_and_push_image(tag_input))
-
 # ====================================================================================================================
+
+# Testing the functions
+
+if __name__ == "__main__":
+    print("=================Q1====================")
+    documentation_markdown()
+
+    print("=================Q2====================")
+    data_uri = compress_and_encode_image("./test_data/shapes.png")
+    print(data_uri)
+
+    print("=================Q3====================")
+    email = "daniel.putta@gramener.com"
+    gh_page_url = update_index_html(email)
+    print(gh_page_url)
+
+    print("=================Q4====================")
+    email = "daniel.putta@gramener.com"
+    print(run_colab_authentication(email))
+
+    print("=================Q5====================")
+    image_path = "./test_data/lenna.webp"
+    threshold = 0.455
+
+    light_pixels = run_image_library_colab(image_path, threshold)
+    print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
+
+    print("=================Q6====================")
+    gh_repo_url = update_and_trigger_workflow("user@example.com")
+    print(gh_repo_url)
+
+    print("=================Q7====================")
+    tag_input = "test"
+    print(build_and_push_image(tag_input))
