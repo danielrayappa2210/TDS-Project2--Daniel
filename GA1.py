@@ -4,6 +4,12 @@ import requests
 import os
 import re
 import shutil
+from bs4 import BeautifulSoup
+import zipfile
+import pandas as pd
+import csv
+import io
+from github import Github
 
 def run_code_status():
     """
@@ -21,9 +27,6 @@ def run_code_status():
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
         return None
-
-shell_output = run_code_status()
-print(shell_output)
 
 # ====================================================================================================================
 
@@ -56,8 +59,7 @@ def run_uv(email_address):
 
         if return_code == 0:
             try:
-                json_output = json.loads(stdout)
-                return json_output['args']['email']
+                return stdout
             except json.JSONDecodeError:
                 return None
         else:
@@ -66,27 +68,27 @@ def run_uv(email_address):
     except Exception as e:
         return None
 
-# Example usage:
-email_to_use = "raghavendra.bobbili@gramener.com"
-print(run_uv(email_to_use))
-
 # ====================================================================================================================
 
-def run_prettier():
+def run_prettier(readme_file_path):
     """
-    Runs prettier on README.md and calculates its SHA256 checksum.
+    Formats the specified README file using Prettier and calculates its SHA-256 checksum.
 
-    This function executes the command "npx -y prettier@3.4.2 README.md | sha256sum"
-    using the system shell. It formats the README.md file with prettier and then
-    calculates the SHA256 checksum of the formatted output.
+    This function executes the command:
+        "npx -y prettier@3.4.2 <readme_file_path> | sha256sum"
+    using the system shell. It:
+    1. Runs Prettier (version 3.4.2) on the given README file.
+    2. Formats the file according to Prettier's rules.
+    3. Computes and returns the SHA-256 checksum of the formatted output.
+
+    Args:
+        readme_file_path (str): The file path of the README file to format.
 
     Returns:
-        A tuple containing (return_code, output, error_message).
-        return_code: The exit code of the command (integer).
-        output: The SHA256 checksum string (string) or the standard output if any.
-        error_message: An error message (string) or an empty string if no error occurred.
+        - stdout (str): The SHA-256 checksum of the formatted content.
     """
-    command_string = "npx -y prettier@3.4.2 README.md | sha256sum"
+
+    command_string = f"npx -y prettier@3.4.2 {readme_file_path} | sha256sum"
 
     try:
         process = subprocess.run(
@@ -104,8 +106,6 @@ def run_prettier():
     except Exception as e:
         print(f"An error occurred: {e}")
         return ""
-
-print(run_prettier())
 
 # ====================================================================================================================
 
@@ -141,14 +141,7 @@ def calculate_formula_in_google_sheet(formula):
         print(f"Unexpected Error: {e}")
         return None
 
-# Example usage:
-# formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 4, 0), 1, 10))"
-formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 0, 4), 1, 10))"
-print(calculate_formula_in_google_sheet(formula))
-
 # ====================================================================================================================
-
-import re
 
 def calculate_formula_in_excel_365_sheet(formula):
     """
@@ -190,13 +183,7 @@ def calculate_formula_in_excel_365_sheet(formula):
 
     return result
 
-# Example usage
-formula = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))"
-print(calculate_formula_in_excel_365_sheet(formula))
-
 # ====================================================================================================================
-
-from bs4 import BeautifulSoup
 
 def extract_hidden_input_value(html_path):
     """
@@ -224,12 +211,7 @@ def extract_hidden_input_value(html_path):
 
     return input_value
 
-# Call the function with the HTML file path
-print(extract_hidden_input_value("GA1_daniel.html"))
-
 # ====================================================================================================================
-
-import datetime
 
 def count_days_in_range(start_date_str, end_date_str, target_day_name):
     """
@@ -243,7 +225,7 @@ def count_days_in_range(start_date_str, end_date_str, target_day_name):
     Returns:
         The number of occurrences of the target day within the date range.
     """
-
+    import datetime
     day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     try:
         start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -262,26 +244,7 @@ def count_days_in_range(start_date_str, end_date_str, target_day_name):
     except ValueError:
         return "Invalid date format or day name."
 
-# Example usage:
-start_date = "1988-12-05"
-end_date = "2010-05-02"
-target_day = "Wednesday"
-
-result = count_days_in_range(start_date, end_date, target_day)
-print(f"Number of {target_day}s between {start_date} and {end_date}: {result}")
-
-start_date2 = "1987-09-23"
-end_date2 = "2013-08-02"
-target_day2 = "Wednesday"
-
-result2 = count_days_in_range(start_date2, end_date2, target_day2)
-print(f"Number of {target_day2}s between {start_date2} and {end_date2}: {result2}")
-
 # ====================================================================================================================
-
-import zipfile
-import os
-import pandas as pd
 
 def get_answer_from_csv(zip_file_path: str) -> str:
     """
@@ -371,9 +334,6 @@ def get_answer_from_csv(zip_file_path: str) -> str:
                 os.remove(file_path)
             os.rmdir(temp_dir)
         return None
-    
-zip_file_path = "q-extract-csv-zip (1).zip"  # Replace with your zip file path
-print(get_answer_from_csv(zip_file_path))
 
 # ====================================================================================================================
 
@@ -396,15 +356,7 @@ def sort_json_by_age_and_name(json_string: str) -> str:
     except json.JSONDecodeError:
         return "Invalid JSON"
 
-# Example Usage (replace with your JSON string):
-json_data = '[{"name":"Alice","age":26},{"name":"Bob","age":10},{"name":"Charlie","age":72},{"name":"David","age":56},{"name":"Emma","age":55},{"name":"Frank","age":54},{"name":"Grace","age":56},{"name":"Henry","age":18},{"name":"Ivy","age":36},{"name":"Jack","age":9},{"name":"Karen","age":95},{"name":"Liam","age":86},{"name":"Mary","age":97},{"name":"Nora","age":11},{"name":"Oscar","age":22},{"name":"Paul","age":84}]'
-sorted_json = sort_json_by_age_and_name(json_data)
-print(sorted_json)
-
 # ====================================================================================================================
-
-import json
-import subprocess
 
 def convert_txt_to_json_and_hash(txt_filepath: str) -> str:
     """
@@ -445,13 +397,7 @@ def convert_txt_to_json_and_hash(txt_filepath: str) -> str:
         print(f"An error occurred: {e}")
         return None
 
-# Example usage:
-input_filepath = "q-multi-cursor-json (1).txt"
-print(convert_txt_to_json_and_hash(input_filepath))
-
 # ====================================================================================================================
-
-from bs4 import BeautifulSoup
 
 def sum_data_values_of_divs(html_path: str) -> int:
     """
@@ -490,14 +436,7 @@ def sum_data_values_of_divs(html_path: str) -> int:
 
     return sum_value
 
-# Call the function with the HTML file path
-print(sum_data_values_of_divs("GA1.html"))
-
 # ====================================================================================================================
-
-import zipfile
-import csv
-import io
 
 def sum_values_for_symbols(zip_file_path: str, target_symbols: list) -> int:
     """
@@ -571,20 +510,7 @@ def sum_values_for_symbols(zip_file_path: str, target_symbols: list) -> int:
 
     return total_sum
 
-# Example Usage:
-zip_file_path = 'q-unicode-data (1).zip'  # Replace with your zip file path.
-target_symbols = ['‡', '‹', '—']
-result = sum_values_for_symbols(zip_file_path, target_symbols)
-print(f"Sum of values: {result}")
-
-target_symbols2 = ['…', '‘','„'] #example of a different set of symbols.
-result2 = sum_values_for_symbols(zip_file_path, target_symbols2)
-print(f"Sum of values for target symbols 2: {result2}")
-
 # ====================================================================================================================
-
-import os
-from github import Github
 
 def create_github_repo_and_push_json(email_id: str) -> str:
     """
@@ -630,16 +556,7 @@ def create_github_repo_and_push_json(email_id: str) -> str:
     
     return "https://raw.githubusercontent.com/danielrayappa2210/TDS/refs/heads/main/email.json"
 
-# Example usage:
-
-email = "daniel.putta@gramener.com"
-gh_page_url = create_github_repo_and_push_json(email)
-print(gh_page_url)
-
 # ====================================================================================================================
-
-import os, zipfile, re, subprocess
-from datetime import datetime
 
 def replace_iitm_and_compute_sha256(zip_filepath: str) -> str:
     """
@@ -658,7 +575,7 @@ def replace_iitm_and_compute_sha256(zip_filepath: str) -> str:
     Returns:
         str: The computed SHA-256 hash.
     """
-
+    from datetime import datetime
     # Create a destination folder named "<zipfilename>_unzipped"
     dest_dir = os.path.splitext(os.path.basename(zip_filepath))[0] + "_unzipped"
     if os.path.exists(dest_dir):
@@ -687,9 +604,6 @@ def replace_iitm_and_compute_sha256(zip_filepath: str) -> str:
     output = subprocess.check_output("cat * | sha256sum", shell=True, cwd=dest_dir, text=True).strip()
     return output
 
-output = replace_iitm_and_compute_sha256('q-replace-across-files.zip')
-print(output)
-
 # ====================================================================================================================
 
 def list_files_and_attributes(zip_filepath, min_size, min_date):
@@ -709,7 +623,6 @@ def list_files_and_attributes(zip_filepath, min_size, min_date):
     Returns:
       str: The output of the shell command (the total size of the matching files).
     """
-    import os, zipfile, subprocess
     from datetime import datetime
 
     # Create destination folder "<zipfilename>_unzipped"
@@ -734,10 +647,6 @@ def list_files_and_attributes(zip_filepath, min_size, min_date):
     output = subprocess.check_output(cmd, shell=True, cwd=dest_dir, text=True).strip()
     return output
 
-# Example usage:
-total_size = list_files_and_attributes("q-list-files-attributes.zip", 8172, "1999-02-01 17:40")
-print(total_size)
-
 # ====================================================================================================================
 
 def move_rename_files(zip_filepath):
@@ -756,7 +665,6 @@ def move_rename_files(zip_filepath):
     Returns:
       str: The output of the shell command.
     """
-    import os, zipfile, subprocess, re, shutil
     from datetime import datetime
 
     # Determine destination folder based on zip filename.
@@ -806,10 +714,6 @@ def move_rename_files(zip_filepath):
     ).strip()
     return output
 
-# Example usage:
-result = move_rename_files("q-move-rename-files.zip")
-print(result)
-
 # ====================================================================================================================
 
 def compare_files(zip_filepath):
@@ -828,7 +732,6 @@ def compare_files(zip_filepath):
     Returns:
       int: The number of lines that differ between a.txt and b.txt.
     """
-    import os, zipfile, shutil
     from datetime import datetime
 
     # Determine destination folder based on the zip filename.
@@ -861,6 +764,79 @@ def compare_files(zip_filepath):
 
     return diff_count
 
-# Example usage:
-diff_lines = compare_files('q-compare-files.zip')
-print(diff_lines)
+# Testing the functions
+
+if __name__ == "__main__":
+    # Example usage:
+    print("=================Q1====================")
+    shell_output = run_code_status()
+    print(shell_output)
+
+    print("=================Q2====================")
+    email_to_use = "raghavendra.bobbili@gramener.com"
+    print(run_uv(email_to_use))
+
+    print("=================Q3====================")
+    print(run_prettier("./test_data/README.md"))
+
+    print("=================Q4====================")
+    formula = "=SUM(ARRAY_CONSTRAIN(SEQUENCE(100, 100, 0, 4), 1, 10))"
+    print(calculate_formula_in_google_sheet(formula))
+
+    print("=================Q5====================")
+    formula = "=SUM(TAKE(SORTBY({10,6,10,9,11,2,7,15,11,12,6,14,2,9,2,12}, {10,9,13,2,11,8,16,14,7,15,5,4,6,1,3,12}), 1, 14))"
+    print(calculate_formula_in_excel_365_sheet(formula))
+
+    print("=================Q6====================")
+    print(extract_hidden_input_value("./test_data/GA1_daniel.html"))
+
+    print("=================Q7====================")
+    start_date = "1988-12-05"
+    end_date = "2010-05-02"
+    target_day = "Wednesday"
+
+    result = count_days_in_range(start_date, end_date, target_day)
+    print(f"Number of {target_day}s between {start_date} and {end_date}: {result}")
+
+    print("=================Q8====================")
+    zip_file_path = "./test_data/q-extract-csv-zip (1).zip"  # Replace with your zip file path
+    print(get_answer_from_csv(zip_file_path))
+
+    print("=================Q9====================")
+    json_data = '[{"name":"Alice","age":26},{"name":"Bob","age":10},{"name":"Charlie","age":72},{"name":"David","age":56},{"name":"Emma","age":55},{"name":"Frank","age":54},{"name":"Grace","age":56},{"name":"Henry","age":18},{"name":"Ivy","age":36},{"name":"Jack","age":9},{"name":"Karen","age":95},{"name":"Liam","age":86},{"name":"Mary","age":97},{"name":"Nora","age":11},{"name":"Oscar","age":22},{"name":"Paul","age":84}]'
+    sorted_json = sort_json_by_age_and_name(json_data)
+    print(sorted_json)
+
+    print("=================Q10====================")
+    input_filepath = "./test_data/q-multi-cursor-json (1).txt"
+    print(convert_txt_to_json_and_hash(input_filepath))
+
+    print("=================Q11====================")
+    print(sum_data_values_of_divs("./test_data/GA1.html"))
+
+    print("=================Q12===================")
+    zip_file_path = './test_data/q-unicode-data (1).zip'  # Replace with your zip file path.
+    target_symbols = ['‡', '‹', '—']
+    result = sum_values_for_symbols(zip_file_path, target_symbols)
+    print(f"Sum of values: {result}")
+
+    print("=================Q13===================")
+    email = "daniel.putta@gramener.com"
+    gh_page_url = create_github_repo_and_push_json(email)
+    print(gh_page_url)
+
+    print("=================Q14===================")
+    output = replace_iitm_and_compute_sha256('./test_data/q-replace-across-files.zip')
+    print(output)
+
+    print("=================Q15===================")
+    total_size = list_files_and_attributes("./test_data/q-list-files-attributes.zip", 8172, "1999-02-01 17:40")
+    print(total_size)
+
+    print("=================Q16===================")
+    result = move_rename_files("./test_data/q-move-rename-files.zip")
+    print(result)
+
+    print("=================Q17===================")
+    diff_lines = compare_files('./test_data/q-compare-files.zip')
+    print(diff_lines)
