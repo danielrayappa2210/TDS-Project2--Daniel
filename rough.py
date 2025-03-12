@@ -545,3 +545,130 @@
 # print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
 
 # ========================================
+
+# import os
+# import requests
+# import base64
+# import time
+
+# def deploy_to_vercel(json_filepath):
+#     """Creates and deployes an app in vercel to expose the data in the provided JSON file.
+
+#     Args:
+#         json_filepath (str): The local path to the JSON file containing student marks.
+
+#     Returns:
+#         str: The deployed Vercel API URL or None if deployment fails."
+#     """
+
+
+#     github_repo = "danielrayappa2210/TDS-vercel"
+#     json_file = "q-vercel-python.json"
+#     github_branch = "main"
+#     access_token = os.getenv("ACCESS_TOKEN")
+
+#     vercel_token = os.getenv("VERCEL_TOKEN")
+#     vercel_deployments_api = "https://api.vercel.com/v6/deployments"
+
+#     if not access_token or not vercel_token:
+#         print("Missing GitHub access token or Vercel token")
+#         return None
+
+#     try:
+#         headers = {"Authorization": f"Bearer {vercel_token}"}
+#         initial_response = requests.get(vercel_deployments_api, headers=headers)
+#         initial_data = initial_response.json()
+
+#         existing_deployment_id = None
+#         if "deployments" in initial_data and initial_data["deployments"]:
+#             existing_deployment_id = initial_data["deployments"][0]["uid"]
+
+#         if not os.path.exists(json_filepath):
+#             print("JSON file not found")
+#             return None
+
+#         with open(json_filepath, "rb") as f:
+#             json_content = f.read()
+#         encoded_content = base64.b64encode(json_content).decode()
+
+#         github_api_url = f"https://api.github.com/repos/{github_repo}/contents/{json_file}"
+#         headers = {"Authorization": f"token {access_token}"}
+
+#         response = requests.get(github_api_url, headers=headers)
+#         if response.status_code == 200:
+#             sha = response.json().get("sha")
+#         else:
+#             sha = None
+
+#         commit_data = {
+#             "message": "Update JSON file",
+#             "content": encoded_content,
+#             "branch": github_branch
+#         }
+
+#         if sha:
+#             commit_data["sha"] = sha
+
+#         response = requests.put(github_api_url, json=commit_data, headers=headers)
+#         if response.status_code not in [200, 201]:
+#             print("Failed to update GitHub")
+#             return None
+
+#         headers = {"Authorization": f"Bearer {vercel_token}"}
+
+#         for _ in range(60):
+#             response = requests.get(vercel_deployments_api, headers=headers)
+#             data = response.json()
+
+#             if "deployments" in data and data["deployments"]:
+#                 latest_deploy = data["deployments"][0]
+#                 status = latest_deploy["state"]
+#                 deploy_id = latest_deploy["uid"]
+#                 url = latest_deploy["url"]
+
+#                 if deploy_id != existing_deployment_id:
+#                     if status == "READY":
+#                         print("Vercel deployment ready")
+#                         return f"https://{url}/api"
+#                     elif status in ["ERROR", "FAILED"]:
+#                         print("Vercel deployment failed")
+#                         return None
+
+#             time.sleep(5)
+
+#         print("Vercel deployment timed out")
+#         return None
+
+#     except requests.RequestException as e:
+#         print("GitHub or Vercel API request failed")
+#         return None
+
+# json_filepath = "q-vercel-python1.json"
+# vercel_url = deploy_to_vercel(json_filepath)
+# print("Deployment URL:", vercel_url)
+
+# # ========================================
+
+# import requests
+# import os
+
+# repo = "danielrayappa2210/TDS-vercel"
+# file_path = "q-vercel-python.json"
+# token = os.getenv("ACCESS_TOKEN")  # Load token from environment variable
+
+# if not token:
+#     print("Error: ACCESS_TOKEN not set.")
+#     exit()
+
+# headers = {"Authorization": f"token {token}"}
+# url = f"https://api.github.com/repos/{repo}/contents/{file_path}"
+
+# response = requests.get(url, headers=headers)
+# data = response.json()
+
+# if response.status_code == 200:
+#     print("SHA:", data.get("sha", "SHA not found"))
+# else:
+#     print("Error:", data)
+
+

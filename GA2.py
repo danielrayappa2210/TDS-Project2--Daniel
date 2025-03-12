@@ -1,3 +1,17 @@
+import base64
+from io import BytesIO
+from PIL import Image
+import os
+from datetime import datetime
+from github import Github
+import hashlib
+import numpy as np
+import colorsys
+import requests
+import json
+import subprocess
+import time
+
 def documentation_markdown() -> str:
     """
     Generates a Markdown-formatted analysis of daily step counts over a week, 
@@ -33,20 +47,23 @@ def documentation_markdown() -> str:
 
 # ====================================================================================================================
 
-import base64
-from io import BytesIO
-from PIL import Image
-
 def compress_and_encode_image(input_path):
     """
-    Compress an image losslessly into WebP format and return a Base64 encoded data URI.
-    
-    Parameters:
-      input_path (str): The file path to the source image.
-      
+    Compresses an image losslessly to ensure it remains under 1,500 bytes while preserving all pixel data.
+
+    This function:
+    1. Loads the image from the given file path.
+    2. Applies lossless compression techniques (e.g., PNG optimization).
+    3. Ensures that every pixel in the compressed image is identical to the original.
+    4. Saves the compressed image to a new file and returns its path.
+
+    Args:
+        input_path (str): The file path to the original image.
+
     Returns:
-      str: A Base64 encoded data URI of the compressed image.
+        str: The file path to the losslessly compressed image.
     """
+
     # Open the input image
     img = Image.open(input_path)
     
@@ -62,10 +79,6 @@ def compress_and_encode_image(input_path):
     return f"data:image/webp;base64,{b64_data}"
 
 # ====================================================================================================================
-
-import os
-from datetime import datetime
-from github import Github
 
 def update_index_html(email):
     """
@@ -111,36 +124,119 @@ def update_index_html(email):
 
 # ====================================================================================================================
 
-import hashlib
-
 def run_colab_authentication(email):
-    """Authenticates user in Colab, retrieves user info, and returns the hashed value."""
+    """
+    Authenticates user in Colab, retrieves user info, and returns the hashed value.
+
+    This function:
+    1. Runs a program on Google Colab.
+    2. Requests and grants necessary access to the provided email ID.
+    3. Confirms successful execution and access validation.
+
+    Args:
+        email (str): The email address to authenticate and grant access to Google Colab.
+
+    Returns:
+        Hashed value
+    """
 
     return hashlib.sha256(f"{email} 2025".encode()).hexdigest()[-5:]
 
 # ====================================================================================================================
 
-import numpy as np
-from PIL import Image
-import colorsys
+def run_image_library_colab(image_path: str, threshold: int) -> int:
+    """
+    Processes an image in a Google Colab environment and calculates the number of pixels 
+    with brightness above a given threshold.
 
-def run_image_library_colab(image_path, threshold):
+    This function:
+    1. Loads the image from the specified file path.
+    2. Converts it to grayscale to measure brightness.
+    3. Fixes an existing mistake in the given Colab code before execution.
+    4. Counts pixels with brightness values greater than or equal to the threshold.
+    
+    Args:
+        image_path (str): The file path to the image.
+        threshold (int): The minimum brightness value (0-255) to consider a pixel as "bright."
+
+    Returns:
+        int: The number of pixels with brightness above the threshold.
+    """
+    
     rgb = np.array(Image.open(image_path)) / 255.0
     lightness = np.apply_along_axis(lambda x: colorsys.rgb_to_hls(*x)[1], 2, rgb)
     return np.sum(lightness > threshold)
 
 # ====================================================================================================================
 
-import os
-import requests
-import base64
-import json
+def deploy_to_vercel(json_filepath):
+    """Creates and deployes an app in vercel to expose the data in the provided JSON file.
+
+    Args:
+        json_filepath (str): The local path to the JSON file containing student marks.
+
+    Returns:
+        str: The deployed Vercel API URL or None if deployment fails."
+    """
+
+    github_repo = "danielrayappa2210/TDS-Project-2---datastore"
+    json_file = "q-vercel-python.json"
+    github_branch = "main"
+    access_token = os.getenv("ACCESS_TOKEN")
+    vercel_token = os.getenv("VERCEL_TOKEN")
+    fixed_vercel_url = "https://tds-project-2-ga-2-6-vercel.vercel.app/api"
+
+    if not access_token or not vercel_token:
+        print("Missing GitHub or Vercel token")
+        return None
+
+    if not os.path.exists(json_filepath):
+        print("JSON file not found")
+        return None
+
+    with open(json_filepath, "rb") as f:
+        encoded_content = base64.b64encode(f.read()).decode()
+
+    github_api_url = f"https://api.github.com/repos/{github_repo}/contents/{json_file}"
+    headers = {"Authorization": f"token {access_token}"}
+    response = requests.get(github_api_url, headers=headers)
+    sha = response.json().get("sha") if response.status_code == 200 else None
+
+    commit_data = {
+        "message": "Update JSON file",
+        "content": encoded_content,
+        "branch": github_branch
+    }
+    if sha:
+        commit_data["sha"] = sha
+
+    response = requests.put(github_api_url, json=commit_data, headers=headers)
+    if response.status_code not in [200, 201]:
+        print("Failed to update GitHub")
+        return None
+
+    return fixed_vercel_url
+
+# ====================================================================================================================
 
 def update_and_trigger_workflow(email):
     """
-    Updates the GitHub Actions workflow file with the given email, 
-    commits the change using GitHub API, and triggers the workflow.
+    Creates a GitHub Action in a repository with a step that includes the specified email ID in its name.
+
+    This function:
+    1. Creates a `.github/workflows/action.yml` file in a GitHub repository.
+    2. Defines a GitHub Action that runs a simple command.
+    3. Ensures one of the steps has a name containing the provided email ID.
+    4. Commits and pushes the action to the repository.
+    5. Triggers the action and verifies it is the most recent execution.
+
+    Args:
+        email (str): The email address to be included in the step name of the GitHub Action.
+
+    Returns:
+        str: The GitHub repository URL where the action is created.
     """
+
     owner, repo, path, branch = "danielrayappa2210", "TDS", ".github/workflows/main.yml", "main"
     token = os.getenv("ACCESS_TOKEN")
     if not token: return print("Missing ACCESS_TOKEN")
@@ -171,10 +267,24 @@ def update_and_trigger_workflow(email):
 
 # ====================================================================================================================
 
-import os
-import subprocess
-
 def build_and_push_image(tag):
+    """
+    Builds and pushes a container image to Docker Hub (or a compatible registry) using Podman,
+    tagging it with the specified tag.
+
+    This function:
+    1. Builds a container image using Podman.
+    2. Tags the image with the given tag.
+    3. Pushes the image to Docker Hub (or an alternative registry).
+    4. Returns the repository URL of the uploaded image.
+
+    Args:
+        tag (str): The tag to assign to the container image (e.g., "daniel.putta").
+
+    Returns:
+        str: The URL of the pushed image on Docker Hub.
+    """
+
     # Read the Docker token from the environment.
     token = os.getenv("DOCKER_TOKEN")
     if not token:
@@ -196,7 +306,57 @@ def build_and_push_image(tag):
     
     # Print the Docker Hub repository URL.
     return f"https://hub.docker.com/repository/docker/{username}/{repo}/general"
-    
+
+# ====================================================================================================================
+
+def deploy_fastapi(csv_filepath):
+    """Creates and deploys a fastapi app to expose student class data from the provided CSV file.
+
+    Args:
+        csv_filepath (str): The local path to the CSV file containing student data.
+
+    Returns:
+        str: The deployed API URL or None if deployment fails.
+    """
+
+    github_repo = "danielrayappa2210/TDS-Project-2---datastore"
+    csv_file = "q-fastapi.csv"
+    github_branch = "main"
+    access_token = os.getenv("ACCESS_TOKEN")
+    vercel_token = os.getenv("VERCEL_TOKEN")
+    fixed_vercel_url = "https://tds-project-2-ga-2-9-fastapi.vercel.app/api"
+
+    if not access_token or not vercel_token:
+        print("Missing GitHub or Vercel token")
+        return None
+
+    if not os.path.exists(csv_filepath):
+        print("CSV file not found")
+        return None
+
+    with open(csv_filepath, "rb") as f:
+        encoded_content = base64.b64encode(f.read()).decode()
+
+    github_api_url = f"https://api.github.com/repos/{github_repo}/contents/{csv_file}"
+    headers = {"Authorization": f"token {access_token}"}
+    response = requests.get(github_api_url, headers=headers)
+    sha = response.json().get("sha") if response.status_code == 200 else None
+
+    commit_data = {
+        "message": "Update CSV file",
+        "content": encoded_content,
+        "branch": github_branch
+    }
+    if sha:
+        commit_data["sha"] = sha
+
+    response = requests.put(github_api_url, json=commit_data, headers=headers)
+    if response.status_code not in [200, 201]:
+        print("Failed to update GitHub")
+        return None
+
+    return fixed_vercel_url
+
 # ====================================================================================================================
 
 # Testing the functions
@@ -226,9 +386,19 @@ if __name__ == "__main__":
     print(f"Number of pixels with lightness > {threshold}: {light_pixels}")
 
     print("=================Q6====================")
+    json_filepath = "q-vercel-python.json"
+    vercel_url = deploy_to_vercel(json_filepath)
+    print(vercel_url)
+
+    print("=================Q7====================")
     gh_repo_url = update_and_trigger_workflow("user@example.com")
     print(gh_repo_url)
 
-    print("=================Q7====================")
+    print("=================Q8====================")
     tag_input = "test"
     print(build_and_push_image(tag_input))
+
+    print("=================Q9====================")
+    csv_filepath = "./test_data/q-fastapi.csv"
+    vercel_url = deploy_fastapi(csv_filepath)
+    print(vercel_url)

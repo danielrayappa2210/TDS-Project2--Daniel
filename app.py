@@ -23,3 +23,19 @@ input_str = "question=Download and unzip file abcd.zip which has a single extrac
 response = query_gpt(input_str, GA1_tools)
 function_call_details = [tool_call["function"] for tool_call in response["tool_calls"]][0]
 print(function_call_details)
+
+# from fastapi import FastAPI, UploadFile, File, Form
+# import os
+
+# app = FastAPI()
+# UPLOAD_DIR = "./uploaded_files"
+# os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# @app.post("/upload")
+# async def upload(text: str = Form(...), file: UploadFile = File(...)):
+#     data = await file.read()
+#     file_path = os.path.join(UPLOAD_DIR, file.filename)
+#     with open(file_path, "wb") as f:
+#         f.write(data)
+#     # Now you can pass `file_path` to your LLM function
+#     return {"filename": file.filename, "stored_at": file_path, "text": text}
