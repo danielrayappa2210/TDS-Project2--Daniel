@@ -20,4 +20,6 @@ html_extract.py
 
 hash_q.txt
 
-test_data
+test_data/
+
+__pycache__/
