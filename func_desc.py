@@ -4,7 +4,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "run_code_status",
-            "description": "Executes the 'code -s' command in the terminal (or Command Prompt) to retrieve the status of Visual Studio Code.",
+            "description": "Runs the 'code -s' command in the terminal to capture and return Visual Studio Code's full status output, including version, commit hash, build details, and environment information.",
             "parameters": {
                 "type": "object",
                 "properties": {},
@@ -17,7 +17,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "run_uv",
-            "description": "Runs an HTTP request to httpbin.org with the given email address.",
+            "description": "Sends an HTTPS GET request to https://httpbin.org/get with the URL-encoded parameter email_id (installing httpie if needed) and returns only the JSON response body.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -38,7 +38,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "run_prettier",
-            "description": "Formats the specified README file using Prettier and calculates its SHA-256 checksum.",
+            "description": "Formats the README.md file using Prettier v3.4.2 via npx, pipes the output to sha256sum, and returns the resulting SHA256 hash of the formatted content.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -59,7 +59,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "calculate_formula_in_google_sheet",
-            "description": "Puts a formula in a google sheet at A1 cell, computes in B1, and returns the result from B1.",
+            "description": "Executes a Google Sheets-specific formula and returns the computed output.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -80,7 +80,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "calculate_formula_in_excel_365_sheet",
-            "description": "Evaluates a given Excel formula and returns its output by inserting the provided formula into an Excel sheet, calculating its result, and retrieving the output.",
+            "description": "Executes an Office 365-exclusive Excel formula and returns the computed output.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -153,7 +153,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "get_answer_from_csv",
-            "description": "Extracts and returns the value from the 'answer' column in the extract.csv file inside a given ZIP archive.",
+            "description": "Downloads and extracts a ZIP file containing a CSV, then retrieves and returns the value in the 'answer' column from the extracted CSV file.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -195,7 +195,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "convert_txt_to_json_and_hash",
-            "description": "Reads a text file containing key=value pairs, converts it into a JSON object, and computes its hash using an online tool.",
+            "description": "Downloads a text file containing key=value pairs, converts them into a single JSON object, computes its hash using an external JSON hashing tool, and returns the resulting hash.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -216,7 +216,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "sum_data_values_of_divs",
-            "description": "Parses an HTML file, finds all <div> elements with the class 'foo' inside a hidden element, and sums their 'data-value' attributes.",
+            "description": "Selects all <div> elements with the class 'foo' from a provided hidden HTML element, extracts their data-value attributes, sums them, and returns the total.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -235,7 +235,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "sum_values_for_symbols",
-            "description": "Reads and processes three differently encoded files, summing values for specific symbols across all files.",
+            "description": "Downloads a ZIP archive containing three files with different encodings, parses each file to extract the 'symbol' and 'value' columns, filters rows where the symbol matches a predefined target set, and returns the sum of the associated values.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -261,7 +261,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "create_github_repo_and_push_json",
-            "description": "Automates the process of creating a GitHub repository, committing a JSON file, and pushing it to GitHub.",
+            "description": "Creates a new public GitHub repository, commits and pushes a JSON file named email.json containing a provided email address, and returns the raw GitHub URL of the file.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -280,7 +280,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "replace_iitm_and_compute_sha256",
-            "description": "Extracts a ZIP archive, replaces all occurrences of 'IITM' (case-insensitive) with 'IIT Madras' in all files, and computes the SHA-256 checksum of the concatenated file contents.",
+            "description": "Extracts files from a provided archive, replaces every instance of 'IITM' (in any case variation) with 'IIT Madras' without altering line endings, and finally concatenates the files to return the SHA256 hash computed via 'cat * | sha256sum' in bash.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -299,7 +299,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "list_files_and_attributes",
-            "description": "Processes the given ZIP file by extracting it into a folder, listing files with their modification date and size, filtering files that are at least min_size bytes and modified on or after min_date, and summing their sizes using an awk command.",
+            "description": "Downloads and extracts an archive, lists all files with their modification dates and sizes, filters files that meet a minimum size threshold and a specified modification date, and returns the total size of the matching files.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -330,7 +330,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "move_rename_files",
-            "description": "Processes the given ZIP file by extracting it, moving all files into a new flat folder, renaming files by incrementing each digit (with 9 wrapping to 0), and running a shell command to compute the SHA-256 hash of the sorted file contents.",
+            "description": "Downloads and extracts an archive, moves all files from subdirectories into an empty folder, renames each file by replacing every digit with its next value (with '9' wrapping to '0'), and computes the SHA256 hash of the concatenated and sorted file contents.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -376,7 +376,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "documentation_markdown",
-            "description": "Generates a Markdown-formatted analysis of daily step counts over a week, comparing trends over time and with friends. It reads the Markdown content from a file and outputs it.",
+            "description": "Generates a Markdown document for an imaginary weekly step analysis that includes a level 1 heading, level 2 subheadings, bold text, italic text, inline code (e.g., sample_code), a fenced code block, a bulleted list, a numbered list, a table, a hyperlink, an image, and a blockquote.",
             "parameters": {
                 "type": "object",
                 "properties": {},
@@ -408,7 +408,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "update_index_html",
-            "description": "Updates the index.html file in a GitHub repository with new content that includes an HTML comment with the provided email and the current date and time, and returns the GitHub URL of the updated file.",
+            "description": "Publishes a GitHub Pages site showcasing author's work with an email address embedded in the HTML enclosed by <!--email_off--> and <!--/email_off--> tags, and returns the site's public URL.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -427,7 +427,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "run_colab_authentication",
-            "description": "Authenticates a user in Colab using the provided email, retrieves user info, and returns a hashed value based on the email and a fixed string.",
+            "description": "Runs a Google Colab program that authenticates the user with the required email access and processes their account information.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -446,7 +446,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "run_image_library_colab",
-            "description": "Processes an image in a Google Colab environment by loading it, converting to grayscale, and counting the number of pixels with brightness values greater than or equal to the given threshold.",
+            "description": "Downloads given image, creates a new Google Colab notebook, fixes an error in the provided code, runs the corrected script to calculate the number of pixels above a defined brightness threshold, and returns the pixel count.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -469,7 +469,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "deploy_to_vercel",
-            "description": "Creates and deploys an app in Vercel to expose data from a provided JSON file by updating a file in a GitHub repository, and returns the deployed Vercel API URL or None if deployment fails.",
+            "description": "Downloads a JSON file containing marks for imaginary students, deploys a Python app on Vercel that exposes an API endpoint accepting multiple 'name' query parameters, and returns a JSON response with the corresponding marks in the order provided.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -488,7 +488,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "update_and_trigger_workflow",
-            "description": "Creates a GitHub Action in a repository with a step that includes the provided email ID. It creates the workflow file, commits it, and triggers the action, then returns the repository URL.",
+            "description": "Creates a GitHub Action workflow file in a repository with at least one step whose name includes a specified email address, and returns the URL of the repository where the action is configured.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -509,7 +509,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "build_and_push_image",
-            "description": "Builds and pushes a container image to Docker Hub (or a compatible registry) using the specified tag, and returns the repository URL of the pushed image.",
+            "description": "Builds and pushes a Docker image to Docker Hub, adds a specific given tag to the image, and returns the Docker image URL in the expected format.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -530,7 +530,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "deploy_fastapi",
-            "description": "Creates and deploys a FastAPI app to expose student class data from the provided CSV file by updating a file in a GitHub repository, and returns the deployed API URL or None if deployment fails.",
+            "description": "Downloads a CSV file with 'studentId' and 'class' columns, then creates and runs a FastAPI server with an '/api' endpoint that returns all student records as JSON in the same order as in the CSV, and supports filtering by one or more 'class' query parameters to return only matching records.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -551,7 +551,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "setup_llamafile_with_ngrok",
-            "description": "Sets up and runs the Llama-3.2-1B-Instruct model using Llamafile and exposes it via an Ngrok tunnel, returning the public URL if successful.",
+            "description": "Downloads the Llamafile, runs the Llama-3.2-1B-Instruct.Q6_K.llamafile model using it, creates an ngrok tunnel to the server, and returns the public ngrok URL.",
             "parameters": {
                 "type": "object",
                 "properties": {},

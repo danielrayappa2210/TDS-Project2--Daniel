@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 def agent(input_str, file_path):
     logging.info(f"Question: {input_str}")
     response = query_gpt(input_str, GA1_tools+GA2_tools)
+    print(response)
     function_call_details = [tool_call["function"] for tool_call in response["tool_calls"]][0]
     logging.info(f"Function details loaded: {function_call_details}")
 
@@ -42,6 +43,7 @@ async def process_request(
 
     # Read the file if provided.
     file_content = None
+    file_path = None
     if file:
         file_content = await file.read()
         file_path = file.filename
