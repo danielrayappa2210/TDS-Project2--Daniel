@@ -8,9 +8,9 @@ GA1_tools = [
             "parameters": {
                 "type": "object",
                 "properties": {},
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -29,9 +29,9 @@ GA1_tools = [
                 "required": [
                     "email_address"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -50,9 +50,9 @@ GA1_tools = [
                 "required": [
                     "readme_file_path"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -71,9 +71,9 @@ GA1_tools = [
                 "required": [
                     "formula"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -92,9 +92,9 @@ GA1_tools = [
                 "required": [
                     "formula"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -113,9 +113,9 @@ GA1_tools = [
                 "required": [
                     "html_path"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -144,9 +144,9 @@ GA1_tools = [
                     "end_date_str",
                     "target_day_name"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -165,9 +165,9 @@ GA1_tools = [
                 "required": [
                     "zip_file_path"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -186,9 +186,9 @@ GA1_tools = [
                 "required": [
                     "json_string"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -207,9 +207,9 @@ GA1_tools = [
                 "required": [
                     "txt_filepath"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -226,9 +226,9 @@ GA1_tools = [
                     }
                 },
                 "required": ["html_path"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -252,9 +252,9 @@ GA1_tools = [
                     }
                 },
                 "required": ["zip_file_path", "target_symbols"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -271,9 +271,9 @@ GA1_tools = [
                     }
                 },
                 "required": ["email_id"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -290,9 +290,9 @@ GA1_tools = [
                     }
                 },
                 "required": ["zip_filepath"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -321,9 +321,9 @@ GA1_tools = [
                     "min_size",
                     "min_date"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -342,9 +342,9 @@ GA1_tools = [
                 "required": [
                     "zip_filepath"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -363,16 +363,15 @@ GA1_tools = [
                 "required": [
                     "zip_filepath"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     }
 ]
 
 # GA2 function description
-GA2_tools = 
-[
+GA2_tools = [
     {
         "type": "function",
         "function": {
@@ -381,9 +380,9 @@ GA2_tools =
             "parameters": {
                 "type": "object",
                 "properties": {},
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -400,9 +399,9 @@ GA2_tools =
                     }
                 },
                 "required": ["input_path"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -419,9 +418,9 @@ GA2_tools =
                     }
                 },
                 "required": ["email"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -438,9 +437,9 @@ GA2_tools =
                     }
                 },
                 "required": ["email"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -461,9 +460,9 @@ GA2_tools =
                     }
                 },
                 "required": ["image_path", "threshold"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -480,9 +479,9 @@ GA2_tools =
                     }
                 },
                 "required": ["json_filepath"],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -501,9 +500,9 @@ GA2_tools =
                 "required": [
                     "email"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -522,9 +521,9 @@ GA2_tools =
                 "required": [
                     "tag"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -543,9 +542,9 @@ GA2_tools =
                 "required": [
                     "csv_filepath"
                 ],
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     },
     {
@@ -556,9 +555,9 @@ GA2_tools =
             "parameters": {
                 "type": "object",
                 "properties": {},
-                "additionalProperties": false
+                "additionalProperties": False
             },
-            "strict": true
+            "strict": True
         }
     }
 ]
