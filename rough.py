@@ -671,4 +671,107 @@
 # else:
 #     print("Error:", data)
 
+# # ========================================
 
+# import os
+# import yaml
+# from github import Github
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
+# def build_and_push_image(tag):
+#     """
+#     Builds and pushes a container image to Docker Hub (or a compatible registry) using Podman,
+#     tagging it with the specified tag.
+
+#     This function:
+#     1. Builds a container image.
+#     2. Tags the image with the given tag.
+#     3. Pushes the image to Docker Hub (or an alternative registry).
+#     4. Returns the repository URL of the uploaded image.
+
+#     Args:
+#         tag (str): The tag to assign to the container image (e.g., "daniel.putta").
+
+#     Returns:
+#         str: The URL of the pushed image on Docker Hub.
+#     """
+
+#     repo_name = "danielrayappa2210/TDS-Project-2---GA2-8---Dockerhub" #replace with your repo name
+#     github_token = os.environ.get("ACCESS_TOKEN") #Get token from env variable.
+
+#     try:
+#         g = Github(github_token)
+#         repo = g.get_repo(repo_name)
+#         file_path = ".github/workflows/docker-build-push.yml"
+#         contents = repo.get_contents(file_path)
+#         yaml_content = yaml.safe_load(contents.decoded_content)
+#         print(yaml_content.keys())
+#         if True in yaml_content:
+#             yaml_content["on"] = yaml_content.pop(True)
+#         print(yaml_content.keys())
+#         # Update the tags line
+#         for step in yaml_content["jobs"]["build-and-push"]["steps"]:
+#             if step.get("uses") == "docker/build-push-action@v3":
+#                 step["with"]["tags"] = f"danielrayappa/tdsga:{tag}"
+
+#         # Write the updated YAML content back
+#         updated_yaml = yaml.dump(yaml_content, default_flow_style=False)
+
+#         repo.update_file(
+#             path=file_path,
+#             message=f"Update Docker image tag to {tag}",
+#             content=updated_yaml,
+#             sha=contents.sha,
+#             branch="main", #Or whatever branch your workflow is on.
+#         )
+#         print(f"Successfully updated Docker image tag to {tag}")
+
+#     except Exception as e:
+#         print(f"Error updating Docker image tag: {e}")
+
+# # Example usage:
+# if __name__ == "__main__":
+#     new_tag = "first" #Change to your test tag
+
+#     try:
+#         update_docker_tag(new_tag)
+#     except:
+#         print("Error: GITHUB_TOKEN environment variable not set.")
+
+# =============================================
+
+# name: Build and Push Docker Image
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v3
+#         with:
+#           context: .
+#           file: ./Dockerfile
+#           push: true
+#           tags: danielrayappa/tdsga:latest # Constant tag
+
+# =============================================

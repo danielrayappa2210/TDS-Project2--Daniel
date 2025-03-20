@@ -10,6 +10,9 @@ import pandas as pd
 import csv
 import io
 from github import Github
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def run_code_status():
     """
@@ -808,7 +811,7 @@ if __name__ == "__main__":
     print(sorted_json)
 
     print("=================Q10====================")
-    input_filepath = "./test_data/q-multi-cursor-json (1).txt"
+    input_filepath = "./test_data/q-multi-cursor-json.txt"
     print(convert_txt_to_json_and_hash(input_filepath))
 
     print("=================Q11====================")

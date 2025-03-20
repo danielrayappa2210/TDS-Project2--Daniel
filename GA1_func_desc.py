@@ -1,3 +1,6 @@
+from GA1 import *
+from GA2 import *
+
 GA1_tools = [
     {
         "type": "function",
@@ -419,9 +422,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "run_image_library_colab",
-            "description": ""
+            
         }
-
-        
     }
 ]

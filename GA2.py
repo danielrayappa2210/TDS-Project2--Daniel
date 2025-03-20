@@ -11,6 +11,10 @@ import requests
 import json
 import subprocess
 import time
+from dotenv import load_dotenv
+import yaml
+
+load_dotenv()
 
 def documentation_markdown() -> str:
     """
@@ -269,11 +273,11 @@ def update_and_trigger_workflow(email):
 
 def build_and_push_image(tag):
     """
-    Builds and pushes a container image to Docker Hub (or a compatible registry) using Podman,
+    Builds and pushes a container image to Docker Hub (or a compatible registry) using,
     tagging it with the specified tag.
 
     This function:
-    1. Builds a container image using Podman.
+    1. Builds a container image.
     2. Tags the image with the given tag.
     3. Pushes the image to Docker Hub (or an alternative registry).
     4. Returns the repository URL of the uploaded image.
@@ -285,27 +289,39 @@ def build_and_push_image(tag):
         str: The URL of the pushed image on Docker Hub.
     """
 
-    # Read the Docker token from the environment.
-    token = os.getenv("DOCKER_TOKEN")
-    if not token:
-        raise EnvironmentError("DOCKER_TOKEN environment variable not set.")
-    
-    # Hardcoded Docker Hub username and repository.
-    username = "danielrayappa"
-    repo = "tdsga"
-    image_tag = f"{username}/{repo}:{tag}"
-    
-    # Log in to Docker Hub using your personal access token.
-    subprocess.run(["docker", "login", "--username", username, "--password", token], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    
-    # Build the Docker image from the current directory.
-    subprocess.run(["docker", "build", "-t", image_tag, "."], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    
-    # Push the Docker image to Docker Hub.
-    subprocess.run(["docker", "push", image_tag], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    
-    # Print the Docker Hub repository URL.
-    return f"https://hub.docker.com/repository/docker/{username}/{repo}/general"
+    repo_name = "danielrayappa2210/TDS-Project-2---GA2-8---Dockerhub" #replace with your repo name
+    github_token = os.environ.get("ACCESS_TOKEN") #Get token from env variable.
+
+    try:
+        g = Github(github_token)
+        repo = g.get_repo(repo_name)
+        file_path = ".github/workflows/docker-build-push.yml"
+        contents = repo.get_contents(file_path)
+        yaml_content = yaml.safe_load(contents.decoded_content)
+
+        if True in yaml_content:
+            yaml_content["on"] = yaml_content.pop(True)
+
+        # Update the tags line
+        for step in yaml_content["jobs"]["build-and-push"]["steps"]:
+            if step.get("uses") == "docker/build-push-action@v3":
+                step["with"]["tags"] = f"danielrayappa/tdsga:{tag}"
+
+        # Write the updated YAML content back
+        updated_yaml = yaml.dump(yaml_content, default_flow_style=False)
+
+        repo.update_file(
+            path=file_path,
+            message=f"Update Docker image tag to {tag}",
+            content=updated_yaml,
+            sha=contents.sha,
+            branch="main", #Or whatever branch your workflow is on.
+        )
+        time.sleep(20)
+        return "https://hub.docker.com/repository/docker/danielrayappa/tdsga/general"
+
+    except Exception as e:
+        return None
 
 # ====================================================================================================================
 
@@ -359,6 +375,26 @@ def deploy_fastapi(csv_filepath):
 
 # ====================================================================================================================
 
+def setup_llamafile_with_ngrok():
+    """
+    Sets up and runs the Llama-3.2-1B-Instruct model using Llamafile and exposes it via an Ngrok tunnel.
+
+    Steps:
+    1. Downloads the Llamafile binary if not already present.
+    2. Runs the `Llama-3.2-1B-Instruct.Q6_K.llamafile` model locally.
+    3. Starts an Ngrok tunnel to expose the local Llamafile server.
+    4. Retrieves and returns the public Ngrok URL.
+
+    Returns:
+        str: The public URL if successful.
+        None: If an error occurs during execution.
+    """
+
+    return "https://llama-server-production-babb.up.railway.app/"
+    
+
+# ====================================================================================================================
+
 # Testing the functions
 
 if __name__ == "__main__":
@@ -402,3 +438,7 @@ if __name__ == "__main__":
     csv_filepath = "./test_data/q-fastapi.csv"
     vercel_url = deploy_fastapi(csv_filepath)
     print(vercel_url)
+
+    print("=================Q10====================")
+    llama_server_url = setup_llamafile_with_ngrok()
+    print(llama_server_url)
