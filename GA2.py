@@ -47,7 +47,7 @@ def documentation_markdown() -> str:
 
     # Optionally process the markdown_text if needed.
     # For this example, we'll simply output it.
-    print(markdown_text)
+    return markdown_text
 
 # ====================================================================================================================
 
@@ -161,7 +161,7 @@ def run_image_library_colab(image_path: str, threshold: int) -> int:
     
     Args:
         image_path (str): The file path to the image.
-        threshold (int): The minimum brightness value (0-255) to consider a pixel as "bright."
+        threshold (int): The minimum brightness value (0-1) to consider a pixel as "bright."
 
     Returns:
         int: The number of pixels with brightness above the threshold.

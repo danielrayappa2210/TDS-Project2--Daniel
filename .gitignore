@@ -16,9 +16,27 @@ q-vercel-python.json
 
 q-unicode-data.zip
 
+q-compare-files.zip
+
+q-compare-files_unzipped/
+
+q-list-files-attributes.zip
+
+q-list-files-attributes_unzipped/
+
+q-move-rename-files.zip
+
+q-move-rename-files_unzipped/
+
 html_extract.py
 
 hash_q.txt
+
+lenna.webp
+
+q-fastapi.csv
+
+shapes.png
 
 test_data/
 

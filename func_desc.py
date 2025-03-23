@@ -414,7 +414,7 @@ GA2_tools = [
                 "properties": {
                     "email": {
                         "type": "string",
-                        "description": "The email text to include in the file."
+                        "description": "Just the email id alone as string to include in the text file."
                     }
                 },
                 "required": ["email"],
@@ -446,7 +446,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "run_image_library_colab",
-            "description": "Downloads given image, creates a new Google Colab notebook, fixes an error in the provided code, runs the corrected script to calculate the number of pixels above a defined brightness threshold, and returns the pixel count.",
+            "description": "Downloads given image, creates a new Google Colab notebook, fixes an error in the provided code, runs the corrected script to calculate the number of pixels above a defined brightness threshold (decimal value between 0 and 1), and returns the pixel count.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -455,8 +455,8 @@ GA2_tools = [
                         "description": "The file path to the image."
                     },
                     "threshold": {
-                        "type": "integer",
-                        "description": "The minimum brightness value (0-255) to consider a pixel as 'bright.'"
+                        "type": "number",
+                        "description": "The minimum brightness value (0-1) to consider a pixel as 'bright.'"
                     }
                 },
                 "required": ["image_path", "threshold"],

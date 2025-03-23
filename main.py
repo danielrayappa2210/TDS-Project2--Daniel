@@ -14,13 +14,19 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 
 def agent(input_str, file_path):
     logging.info(f"Question: {input_str}")
-    response = query_gpt(input_str, GA1_tools+GA2_tools)
-    print(response)
+    input_modified_str = input_str + "\n" + f"File is {file_path}" if file_path else input_str
+    response = query_gpt(input_modified_str, GA1_tools+GA2_tools)
+    logging.info(f"Response: {response}")
+    logging.info(f"Tools: {response.get("tool_calls",[])}")
     function_call_details = [tool_call["function"] for tool_call in response["tool_calls"]][0]
     logging.info(f"Function details loaded: {function_call_details}")
 
     # Call the function with the filepath
-    return 1
+    func = globals()[function_call_details['name']]
+    arguments = json.loads(function_call_details['arguments'])
+    logging.info(f"Executing function: {function_call_details['name']} with arguments: {arguments}")
+    func_output = func(**arguments)
+    return func_output
 
 app = FastAPI()
 
@@ -51,7 +57,9 @@ async def process_request(
             f.write(file_content)
 
     # Call the agent function
-    response = agent(input_question, file_path)
+    output = agent(input_question, file_path)
+    output = str(output) if not isinstance(output, str) else output
+    response = {"answer": output}
 
     return JSONResponse(content=response)
 
