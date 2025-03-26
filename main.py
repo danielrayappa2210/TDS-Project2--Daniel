@@ -1,5 +1,7 @@
 from GA1 import *
 from GA2 import *
+from GA3 import *
+from GA5 import *
 from func_desc import *
 from llm_utils import *
 import logging
@@ -15,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 def agent(input_str, file_path):
     logging.info(f"Question: {input_str}")
     input_modified_str = input_str + "\n" + f"File is {file_path}" if file_path else input_str
-    response = query_gpt(input_modified_str, GA1_tools+GA2_tools)
+    response = query_gpt(input_modified_str, GA1_tools+GA1_tools+GA3_tools+GA5_tools)
     logging.info(f"Response: {response}")
     logging.info(f"Tools: {response.get("tool_calls",[])}")
     function_call_details = [tool_call["function"] for tool_call in response["tool_calls"]][0]

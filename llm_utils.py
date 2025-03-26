@@ -35,4 +35,5 @@ def query_gpt(user_input: str, tools: list[Dict[str, Any]]) -> Dict[str, Any]:
             "tool_choice": "auto",
         },
     )
+    print(response.json())
     return response.json()["choices"][0]["message"]
