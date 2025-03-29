@@ -372,7 +372,7 @@ GA1_tools = [
         "type": "function",
         "function": {
             "name": "generate_sql_query",
-            "description": "Generates an SQL query from a natural language description. This function takes a user-provided question or request related to SQL and transforms it into a syntactically correct SQL query.",
+            "description": "Generates an SQL query from a natural language description. This function takes a user-provided question or request related to SQL and transforms it into a syntactically correct SQL query. Implement every single instruction (small or big) given in the description",
             "parameters": {
                 "type": "object",
                 "properties": {
