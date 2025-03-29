@@ -94,6 +94,12 @@ app.py
 
 requirements_old.txt
 
+.git
+
+*.pyc
+
+node_modules/
+
 test_data/
 
 __pycache__/
