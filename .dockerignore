@@ -98,6 +98,8 @@ requirements_old.txt
 
 *.pyc
 
+app.py
+
 node_modules/
 
 test_data/
