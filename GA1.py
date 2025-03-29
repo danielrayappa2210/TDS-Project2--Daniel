@@ -11,6 +11,7 @@ import csv
 import io
 from github import Github
 from dotenv import load_dotenv
+from llm_utils import *
 
 load_dotenv()
 
@@ -767,6 +768,42 @@ def compare_files(zip_filepath):
     return diff_count
 
 # ====================================================================================================================
+
+def generate_sql_query(question: str) -> str:
+    """
+    Converts a natural language question into an SQL query.
+
+    This function takes a descriptive SQL-related question as input and returns
+    the corresponding SQL query. It utilizes a prompt template to guide the
+    transformation process and relies on the `chat_completion` function to
+    generate the SQL query.
+
+    Args:
+        question (str): A natural language description of the desired SQL operation.
+
+    Returns:
+        str: The SQL query corresponding to the input question.
+    """
+
+    prompt_template = (
+        "You are an SQL query generator. Your task is to translate a natural language description of an SQL operation "
+        "into a correct SQL query. Read the input carefully and output only the SQL query as plain text—no explanations, "
+        "no formatting, and no code block syntax such as triple backticks.\n\n"
+        "For example:\n"
+        "Input: \"Write a query to extract all the rows in table 'tickets'\"\n"
+        "Output: SELECT * FROM tickets;\n\n"
+        "Now, please convert the following description into an SQL query:\n"
+        "{question}"
+    )
+    
+    # Format the prompt with the provided question.
+    prompt = prompt_template.format(question=question)
+    
+    # Get the SQL query output using your chat_completion function.
+    sql_query = chat_completion(prompt)
+    return sql_query
+
+# ====================================================================================================================
 # Testing the functions
 
 if __name__ == "__main__":
@@ -843,3 +880,11 @@ if __name__ == "__main__":
     print("=================Q17===================")
     diff_lines = compare_files('./test_data/q-compare-files.zip')
     print(diff_lines)
+
+    print("=================Q18===================")
+    question = "There is a tickets table in a SQLite database that has columns type, units, and price. Each row is a customer bid for a concert ticket.\n\n| type   | units | price |\n|--------|-------|-------|\n| Silver | 38    | 1.47  |\n| SILVER | 562   | 1.98  |\n| Silver | 541   | 1.74  |\n| bronze | 224   | 0.95  |\n| BRONZE | 493   | 1.82  |\n| ...    | ...   | ...   |\n\nWhat is the total sales of all the items in the \"Gold\" ticket type? Write SQL to calculate it."
+    try:
+        query = generate_sql_query(question)
+        print(query)
+    except Exception as e:
+        print("Error:", e)

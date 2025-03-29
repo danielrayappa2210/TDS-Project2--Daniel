@@ -4,7 +4,6 @@ import gzip
 import re
 from datetime import datetime
 from collections import defaultdict
-# from fuzzywuzzy import fuzz, process
 import os
 import numpy as np
 import yt_dlp
@@ -14,6 +13,8 @@ import requests
 from metaphone import doublemetaphone
 from rapidfuzz import fuzz
 from dotenv import load_dotenv
+from PIL import Image
+import io
 
 load_dotenv()  
 
@@ -502,7 +503,7 @@ def generate_duckdb_query(min_timestamp: str, min_useful_stars: int) -> str:
 
 # ====================================================================================================================
 
-def extract_and_transcribe(youtube_url, start_time, stop_time):
+def extract_and_transcribe(start_time, stop_time):
     """
     Generates a transcript for a specific segment of a YouTube video.
 
@@ -514,8 +515,6 @@ def extract_and_transcribe(youtube_url, start_time, stop_time):
 
     Parameters:
     -----------
-    youtube_url : str
-        The URL of the YouTube video containing the mystery story audiobook.
     start_time : float
         The starting time (in seconds) of the segment to be transcribed (e.g., 108.8).
     stop_time : float
@@ -526,7 +525,8 @@ def extract_and_transcribe(youtube_url, start_time, stop_time):
     str
         The transcript text of the video segment between start_time and stop_time.
     """
-    
+
+    youtube_url = "https://youtu.be/NRntuOJu4ok"
     MP3_FILE = "downloaded_audio.mp3"
     SEGMENT_FILE = "audio_segment.mp3"
     DURATION = stop_time - start_time
@@ -614,7 +614,20 @@ def extract_and_transcribe(youtube_url, start_time, stop_time):
 
 # ====================================================================================================================
 
-def reconstruct_image(scrambled_image_path: str, mapping: list, output_path: str) -> None:
+def reconstruct_image(scrambled_image_path: str, mapping: list) -> str:
+    """
+    Reconstructs an image from its scrambled pieces using a specified mapping.
+
+    This function takes a scrambled image and reassembles it into its original form based on the provided mapping of piece positions.
+
+    Args:
+        scrambled_image_path (str): The file path to the scrambled image.
+        piece_mappings (list of tuples): A list of tuples, each containing four integers:
+            (original_row, original_col, scrambled_row, scrambled_col).
+            These values represent the original and scrambled positions of each piece in the format:
+            (Original Row, Original Column, Scrambled Row, Scrambled Column).
+    """
+
     grid_size = 5  # 5x5 grid
     piece_size = 100  # Each piece is 100x100 pixels (since 500/5 = 100)
     
@@ -639,21 +652,15 @@ def reconstruct_image(scrambled_image_path: str, mapping: list, output_path: str
         # Paste the piece in the correct position
         reconstructed_image.paste(piece, (original_x, original_y))
     
-    # Save the reconstructed image
-    reconstructed_image.save(output_path, format='PNG')
-    print(f"Reconstructed image saved at {output_path}")
-
-# Example Usage
-# mapping_data = [
-#     (2,1,0,0), (1,1,0,1), (4,1,0,2), (0,3,0,3), (0,1,0,4),
-#     (1,4,1,0), (2,0,1,1), (2,4,1,2), (4,2,1,3), (2,2,1,4),
-#     (0,0,2,0), (3,2,2,1), (4,3,2,2), (3,0,2,3), (3,4,2,4),
-#     (1,0,3,0), (2,3,3,1), (3,3,3,2), (4,4,3,3), (0,2,3,4),
-#     (3,1,4,0), (1,2,4,1), (1,3,4,2), (0,4,4,3), (4,0,4,4)
-# ]
-
-# Call the function
-#reconstruct_image("image.png", mapping_data, "reconstructed_image.png")
+    # Write the reconstructed image to an in-memory bytes buffer
+    buffered = io.BytesIO()
+    reconstructed_image.save(buffered, format="WEBP")
+    
+    # Get the byte data from the buffer and encode it as base64
+    img_bytes = buffered.getvalue()
+    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+    
+    return f"data:image/webp;base64,{img_base64}"
 
 # ====================================================================================================================
 
@@ -713,8 +720,17 @@ if __name__ == "__main__":
     print(duckdb_query)
 
     print("=================Q9===================")
-    youtube_link = "https://youtu.be/NRntuOJu4ok"  # Replace with actual link
     start = 108.8
     stop = 282.6
-    transcript = extract_and_transcribe(youtube_link, start, stop)
+    transcript = extract_and_transcribe(start, stop)
     print(transcript)
+
+    print("=================Q10===================")
+    mapping_data = [
+        (2,1,0,0), (1,1,0,1), (4,1,0,2), (0,3,0,3), (0,1,0,4),
+        (1,4,1,0), (2,0,1,1), (2,4,1,2), (4,2,1,3), (2,2,1,4),
+        (0,0,2,0), (3,2,2,1), (4,3,2,2), (3,0,2,3), (3,4,2,4),
+        (1,0,3,0), (2,3,3,1), (3,3,3,2), (4,4,3,3), (0,2,3,4),
+        (3,1,4,0), (1,2,4,1), (1,3,4,2), (0,4,4,3), (4,0,4,4)
+    ]
+    print(reconstruct_image("GA5_10.webp", mapping_data))

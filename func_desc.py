@@ -367,6 +367,27 @@ GA1_tools = [
             },
             "strict": True
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "generate_sql_query",
+            "description": "Generates an SQL query from a natural language description. This function takes a user-provided question or request related to SQL and transforms it into a syntactically correct SQL query.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "A natural language description of the SQL query to generate. This should be a complete request specifying the required SQL operation, table names, columns, and conditions where applicable."
+                    }
+                },
+                "required": [
+                    "question"
+                ],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
     }
 ]
 
@@ -741,6 +762,231 @@ GA3_tools = [
     }
 ]
 
+# GA4 function description
+GA4_tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_ducks_sum",
+            "description": "Counts the total number of ducks (players out for 0 runs) on a specific page of ESPN Cricinfo's ODI batting statistics.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "page_number": {
+                        "type": "integer",
+                        "description": "The page number of the ESPN Cricinfo ODI batting stats to fetch and analyze."
+                    }
+                },
+                "required": ["page_number"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "fetch_imdb_movies",
+            "description": "Fetches a list of movies from IMDb that fall within a specified IMDb rating range using the IMDb's advanced web search at https://www.imdb.com/search/title/ to access movie data. The function retrieves details such as movie ID, title, release year, and rating from the first 25 results.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "min_rating": {
+                        "type": "number",
+                        "description": "The minimum IMDb rating to filter movies."
+                    },
+                    "max_rating": {
+                        "type": "number",
+                        "description": "The maximum IMDb rating to filter movies."
+                    }
+                },
+                "required": ["min_rating", "max_rating"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "country_outline_api_endpoint",
+            "description": "Returns the API endpoint URL for a FastAPI service that extracts all headings (H1 to H6) from a Wikipedia page for a given country, generating a Markdown-formatted outline of the page content.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_forecast_description",
+            "description": "Fetches the weather forecast for a given city using the BBC Weather API. The function retrieves the location ID for the specified city, then extracts forecast details such as the date and a detailed weather description, returning a structured JSON response.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "required_city": {
+                        "type": "string",
+                        "description": "The name of the city for which the weather forecast is requested."
+                    }
+                },
+                "required": ["required_city"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_maximum_latitude",
+            "description": "Retrieves the maximum latitude of the bounding box for a given city in a specified country using the Nominatim API. The function sends a request to fetch geospatial data and extracts the highest latitude value from the bounding box coordinates.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "country": {
+                        "type": "string",
+                        "description": "The name of the country where the city is located."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "The name of the city for which the maximum latitude is required."
+                    }
+                },
+                "required": ["country", "city"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "fetch_most_recent_link",
+            "description": "Retrieves the most recent Hacker News post that contains a specified keyword and has at least a given number of points. It queries the HNRSS API, filters the results, and returns the URL of the most relevant post.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "keyword": {
+                        "type": "string",
+                        "description": "The topic or keyword to search for in Hacker News posts."
+                    },
+                    "min_points": {
+                        "type": "integer",
+                        "description": "The minimum number of points a post must have to be considered relevant."
+                    }
+                },
+                "required": ["keyword", "min_points"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_most_recent_valid_user",
+            "description": "Finds the most recently created GitHub user account in a specified city that has at least a given number of followers and was created before a specified date. The function queries the GitHub API, filters users based on the given criteria, and returns the creation date of the newest qualifying user.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city to search for GitHub users (e.g., 'Bangalore')."
+                    },
+                    "min_followers": {
+                        "type": "integer",
+                        "description": "The minimum number of followers a user must have to be considered."
+                    },
+                    "max_date_time": {
+                        "type": "string",
+                        "description": "The latest possible account creation date in ISO 8601 UTC format (e.g., '2024-01-01T00:00:00Z')."
+                    }
+                },
+                "required": ["location", "min_followers", "max_date_time"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_github_action_workflow",
+            "description": "Generates a GitHub Actions workflow that schedules a daily commit to the repository, appending the current date to a file. A step in the workflow is named using the provided email address.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "email_id": {
+                        "type": "string",
+                        "description": "The email address to be included in the name of one of the workflow steps."
+                    }
+                },
+                "required": ["email_id"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "calculate_total_marks",
+            "description": "Calculates the total marks in a specified subject for students who meet or exceed a given score in another subject, within a specified group range. The data is extracted from a PDF file.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filepath": {
+                        "type": "string",
+                        "description": "Path to the PDF file containing the student marks table."
+                    },
+                    "group_range_str": {
+                        "type": "string",
+                        "description": "Range of groups to filter, in the format 'start-end' (e.g., '16-45')."
+                    },
+                    "filter_marks": {
+                        "type": "integer",
+                        "description": "Minimum score threshold for the filter subject."
+                    },
+                    "main_subject": {
+                        "type": "string",
+                        "description": "The subject for which to calculate the total marks."
+                    },
+                    "filter_subject": {
+                        "type": "string",
+                        "description": "The subject used to apply the score filter."
+                    }
+                },
+                "required": ["filepath", "group_range_str", "filter_marks", "main_subject", "filter_subject"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "pdf_to_markdown",
+            "description": "Converts a PDF file to Markdown format, ensuring proper formatting using headings, lists, tables, and code blocks. The final Markdown output is formatted using Prettier 3.4.2 for consistency.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pdf_filepath": {
+                        "type": "string",
+                        "description": "The file path to the PDF document that needs to be converted into Markdown."
+                    }
+                },
+                "required": ["pdf_filepath"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    }
+]
+
 # GA5 function description
 GA5_tools = [
     {
@@ -959,10 +1205,6 @@ GA5_tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "youtube_url": {
-                        "type": "string",
-                        "description": "The URL of the YouTube video containing the audiobook or spoken content."
-                    },
                     "start_time": {
                         "type": "number",
                         "description": "The starting time (in seconds) of the segment to be transcribed (e.g., 108.8)."
@@ -972,7 +1214,37 @@ GA5_tools = [
                         "description": "The ending time (in seconds) of the segment to be transcribed (e.g., 282.6)."
                     }
                 },
-                "required": ["youtube_url", "start_time", "stop_time"],
+                "required": ["start_time", "stop_time"],
+                "additionalProperties": False
+            },
+            "strict": True
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "reconstruct_image",
+            "description": "Reconstructs an image from its scrambled pieces using a specified mapping of piece positions. The function takes a scrambled image file and a mapping list that details how each scrambled piece should be repositioned to restore the original image. The output is a base64-encoded WEBP image, representing the reconstructed version.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "scrambled_image_path": {
+                        "type": "string",
+                        "description": "The file path to the scrambled image that needs to be reconstructed."
+                    },
+                    "mapping": {
+                        "type": "array",
+                        "description": "A list of mappings defining how scrambled pieces should be repositioned. Each mapping is a tuple containing four integers: (original_row, original_col, scrambled_row, scrambled_col).",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "description": "A tuple containing four integers (original_row, original_col, scrambled_row, scrambled_col), indicating where each scrambled piece should be placed in the reconstructed image."
+                        }
+                    }
+                },
+                "required": ["scrambled_image_path", "mapping"],
                 "additionalProperties": False
             },
             "strict": True
