@@ -509,7 +509,7 @@ GA2_tools = [
         "type": "function",
         "function": {
             "name": "update_and_trigger_workflow",
-            "description": "Creates a GitHub Action workflow file in a repository with at least one step whose name includes a specified email address, and returns the URL of the repository where the action is configured.",
+            "description": "Creates a GitHub Action workflow (NO cron/scheduled commits) file in a repository with at least one step whose name includes a specified email address, and returns the URL of the repository where the action is configured.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -722,12 +722,12 @@ GA3_tools = [
         "type": "function",
         "function": {
             "name": "docs_similarity_api_endpoint",
-            "description": "Returns the API endpoint URL for a FastAPI service that finds the top 3 most similar documents from a list of documents based on a search query/string.",
+            "description": "Creates a FastAPI-based semantic search service built for InfoCore Solutions and return its the API endpoint URL. This service is implemented as a POST endpoint at '/similarity' and accepts a JSON payload containing 'docs' (an array of document texts from an internal knowledge base) and 'query' (a search query string). The service computes text embeddings using the 'text-embedding-3-small' model for both documents and query, calculates cosine similarity scores, and returns the top three matching documents ranked by similarity. The FastAPI application also enables CORS to allow all origins and headers, and supports OPTIONS and POST methods.",
             "parameters": {
-                "type": "object",
-                "properties": {},
-                "required": [],
-                "additionalProperties": False
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
             },
             "strict": True
         }
@@ -736,12 +736,12 @@ GA3_tools = [
         "type": "function",
         "function": {
             "name": "employee_queries_api_endpoint",
-            "description": "Returns the API endpoint URL for a FastAPI service that maps employee queries to specific function calls.",
+            "description": "Create a FastAPI service that maps employee queries to specific function calls for TechNova Corp and return the API endpoint URL. The service exposes a GET endpoint at '/execute' which accepts a query parameter 'q' containing pre-templatized queries (such as checking ticket status, scheduling meetings, retrieving expense balances, calculating performance bonuses, and reporting office issues). The backend analyzes the query, extracts the required parameters, and returns a JSON response with the function name and a JSON-encoded string of arguments. CORS is enabled to allow GET requests from any origin.",
             "parameters": {
-                "type": "object",
-                "properties": {},
-                "required": [],
-                "additionalProperties": False
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False
             },
             "strict": True
         }
@@ -916,7 +916,7 @@ GA4_tools = [
         "type": "function",
         "function": {
             "name": "create_github_action_workflow",
-            "description": "Generates a GitHub Actions workflow that schedules a daily commit to the repository, appending the current date to a file. A step in the workflow is named using the provided email address.",
+            "description": "Generates a GitHub Actions workflow that uses 'cron' to schedule a daily commit to the repository, appending the current date to a file. A step in the workflow is named using the provided email address.",
             "parameters": {
                 "type": "object",
                 "properties": {

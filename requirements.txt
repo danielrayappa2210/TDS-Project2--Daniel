@@ -16,3 +16,4 @@ rapidfuzz
 requests
 uvicorn
 yt_dlp
+python-multipart

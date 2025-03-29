@@ -253,32 +253,120 @@ def most_similar(embeddings):
 
 def docs_similarity_api_endpoint():
     """
-    Returns the API endpoint URL for a FastAPI service that finds the top 3 most similar documents 
-    from a list of texts based on a search query. The service computes embeddings using text-embedding-3-small,
-    calculates cosine similarities, and returns the identifiers (or positions) of the top 3 matching documents.
-    CORS is enabled for OPTIONS and POST methods, allowing all origins and headers.
+    Provides the API endpoint URL for a FastAPI-based semantic search service developed for InfoCore Solutions,
+    a technology consulting firm with an extensive internal knowledge base. The service is specifically designed
+    to address the limitations of traditional keyword-based search by using semantic search techniques.
+
+    Service Overview:
+    -----------------
+    The FastAPI service is implemented as a POST endpoint located at '/similarity'. It receives a JSON payload
+    structured with two keys:
+      - "docs": an array of strings, where each string is the full text of a document (e.g., technical documents,
+                project reports, case studies) from the internal knowledge base.
+      - "query": a string containing the user's search query.
+
+    Processing Workflow:
+    ----------------------
+    1. **Request Reception:** The service accepts the POST request with the provided JSON payload.
+    2. **Embedding Generation:** For every document in the "docs" array, as well as for the "query" string,
+       the service computes a text embedding using the 'text-embedding-3-small' model. This embedding captures
+       the semantic context of the text.
+    3. **Similarity Computation:** The API calculates the cosine similarity between the embedding of the query and
+       each document's embedding. This step helps in quantifying the contextual relevance of each document to the query.
+    4. **Ranking and Response:** Based on the computed similarity scores, the service selects the top three documents
+       that are most similar to the query. It then returns these documents in a ranked order (from most similar to least).
+       The expected JSON response format is:
+       
+         {
+             "matches": [
+                 "Contents of the document with the highest similarity",
+                 "Contents of the document with the second highest similarity",
+                 "Contents of the document with the third highest similarity"
+             ]
+         }
+
+    CORS Configuration:
+    -------------------
+    The FastAPI application is configured to enable Cross-Origin Resource Sharing (CORS). It allows:
+      - All origins to access the endpoint.
+      - All headers.
+      - The OPTIONS and POST HTTP methods.
+    This ensures the endpoint is accessible from a variety of client applications without restrictions.
 
     Returns:
     --------
     str
-        The API endpoint URL, e.g., "http://127.0.0.1:8000/similarity".
+        The URL endpoint for the semantic search API. For instance, it may return a URL like
+        "http://127.0.0.1:8000/similarity" during development or a deployed URL when published.
     """
-    
-    return "https://tds-project-2-ga-3-7.vercel.app/similarity"
 
+    return "https://tds-project-2-ga-3-7.vercel.app/similarity"
 
 # ====================================================================================================================
 
 def employee_queries_api_endpoint():
     """
-    Returns the API endpoint URL for a FastAPI service that maps employee queries to specific function calls.
+    Provides the API endpoint URL for a FastAPI-based service that maps employee queries to specific function calls
+    for TechNova Corp's internal digital assistant. This service processes various pre-templatized queries related
+    to tasks such as IT support ticket status, meeting scheduling, expense reimbursement balances, performance bonus
+    calculations, and office issue reporting.
 
-    This service, processes queries for tasks such as checking ticket status,
-    scheduling meetings, retrieving expense balances, calculating performance bonuses, and reporting office issues.
-    """
+    Service Overview:
+    -----------------
+    The FastAPI application exposes a GET endpoint at '/execute', which accepts a query parameter 'q' containing one
+    of the following templatized employee queries:
     
-    return "https://tds-project-2-ga-3-8.vercel.app/execute"
+      1. Ticket Status:
+         - Example Query: "What is the status of ticket 83742?"
+         - Mapped to: get_ticket_status(ticket_id=83742)
+      
+      2. Meeting Scheduling:
+         - Example Query: "Schedule a meeting on 2025-02-15 at 14:00 in Room A."
+         - Mapped to: schedule_meeting(date="2025-02-15", time="14:00", meeting_room="Room A")
+      
+      3. Expense Reimbursement:
+         - Example Query: "Show my expense balance for employee 10056."
+         - Mapped to: get_expense_balance(employee_id=10056)
+      
+      4. Performance Bonus Calculation:
+         - Example Query: "Calculate performance bonus for employee 10056 for 2025."
+         - Mapped to: calculate_performance_bonus(employee_id=10056, current_year=2025)
+      
+      5. Office Issue Reporting:
+         - Example Query: "Report office issue 45321 for the Facilities department."
+         - Mapped to: report_office_issue(issue_code=45321, department="Facilities")
 
+    Processing Workflow:
+    ----------------------
+    1. **Request Reception:** The service receives a GET request at '/execute' with a query parameter 'q' that includes one
+       of the predefined templatized queries.
+    2. **Query Analysis:** The backend analyzes the text in the 'q' parameter to determine which of the pre-defined functions
+       to call.
+    3. **Parameter Extraction:** The necessary parameters (e.g., ticket_id, employee_id, date, time, meeting_room, issue_code, department)
+       are extracted from the query text.
+    4. **Response Formation:** The API responds with a JSON object that includes:
+         - "name": The name of the function that should be called.
+         - "arguments": A JSON string encoding the parameters for that function.
+       For example, the query "What is the status of ticket 83742?" would yield:
+       
+         {
+           "name": "get_ticket_status",
+           "arguments": "{\"ticket_id\": 83742}"
+         }
+
+    CORS Configuration:
+    -------------------
+    The FastAPI application is configured with CORS to allow GET requests from any origin, ensuring accessibility
+    across various web interfaces used by employees.
+
+    Returns:
+    --------
+    str
+        The URL endpoint for the employee queries mapping API. For example, during development, it might be:
+        "http://127.0.0.1:8000/execute", or a deployed URL like "https://tds-project-2-ga-3-8.vercel.app/execute".
+    """
+
+    return "https://tds-project-2-ga-3-8.vercel.app/execute"
 
 # ====================================================================================================================
 
