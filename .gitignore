@@ -92,6 +92,13 @@ q-pdf-to-markdown.pdf
 
 app.py
 
+
+ngrok
+
+ngrok-stable-linux-amd64.zip
+
+ngrok-v3-stable-linux-amd64.tgz
+
 requirements_old.txt
 
 test_data/

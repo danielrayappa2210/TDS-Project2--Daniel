@@ -62,7 +62,7 @@ async def process_request(
     # Call the agent function
     output = agent(input_question, file_path)
     output = str(output) if not isinstance(output, str) else output
-    response = {"answer": output}
+    response = {"answer": output.strip()}
 
     return JSONResponse(content=response)
 

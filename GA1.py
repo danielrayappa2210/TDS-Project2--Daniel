@@ -48,7 +48,7 @@ def run_uv(email_address):
         json_output: The parsed JSON output (dictionary) or None.
         error_message: An error message (string) or None.
     """
-    command_list = ["uv", "run", "--with", "httpie", "--", "https", "https://httpbin.org/get", f"email=={email_address}"]
+    command_list = ["/usr/local/bin/uv", "run", "--with", "httpie", "--", "https", "https://httpbin.org/get", f"email=={email_address}"]
 
     try:
         process = subprocess.run(
