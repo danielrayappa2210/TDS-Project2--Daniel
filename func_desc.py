@@ -663,18 +663,16 @@ GA3_tools = [
         "type": "function",
         "function": {
             "name": "base64_encoding",
-            "description": "Generates the JSON body for an OpenAI API POST request to extract text from an invoice image.",
+            "description": "Encodes an invoice image in base64 and generates a JSON request body for OpenAI's API to extract text.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "image_path": {
                         "type": "string",
-                        "description": "The path to the invoice image file."
+                        "description": "The file path to the invoice image containing text that needs extraction."
                     }
                 },
-                "required": [
-                    "image_path"
-                ],
+                "required": ["image_path"],
                 "additionalProperties": False
             },
             "strict": True
@@ -684,7 +682,7 @@ GA3_tools = [
         "type": "function",
         "function": {
             "name": "generate_embedding_request",
-            "description": "Processes a list of verification messages for fraud detection. Each message is formatted to include a transaction code and an email address",
+            "description": "Generates a JSON payload for requesting text embeddings from OpenAI's API. This is used in fraud detection to analyze transaction verification messages.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -693,12 +691,10 @@ GA3_tools = [
                         "items": {
                             "type": "string"
                         },
-                        "description": "A list of verification messages."
+                        "description": "A list of personalized transaction verification messages, each containing a transaction code and an email address. These messages are analyzed for fraud detection."
                     }
                 },
-                "required": [
-                    "messages"
-                ],
+                "required": ["messages"],
                 "additionalProperties": False
             },
             "strict": True

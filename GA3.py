@@ -156,15 +156,24 @@ def generate_openai_address_request(fields: list) -> str:
 
 def base64_encoding(image_path):
     """
-    Generates the JSON body for an OpenAI API POST request to extract text from an invoice image.
+    Generates a JSON payload for an OpenAI API POST request to extract text from an invoice image.
 
-    The JSON uses model "gpt-4o-mini" and includes a single user message containing:
-      - Text: "Extract text from this image."
-      - image_url: the provided base64 URL of the invoice image.
+    This function reads an invoice image, encodes it in base64, and prepares a properly formatted JSON request body
+    to send to OpenAI's gpt-4o-mini model for text extraction.
+
+    The request contains a single user message with both:
+      - A text instruction: "Extract text from this image."
+      - A base64-encoded image URL.
 
     Parameters:
     -----------
     image_path : str
+        The file path to the invoice image that needs text extraction.
+
+    Returns:
+    --------
+    str
+        A JSON-formatted string that can be sent to OpenAI's API.
     """
 
     with open(image_path, "rb") as image_file:
@@ -199,16 +208,22 @@ def base64_encoding(image_path):
 
 def generate_embedding_request(messages: list[str]):
     """
-    Processes a list of verification messages for fraud detection.
+    Generates a JSON payload for obtaining text embeddings from OpenAI's API.
 
-    This function takes a list of verification messages—each formatted to include a transaction code and an email address—and
-    extracts the relevant details. The extracted data is then prepared for conversion into text embeddings for further analysis
-    in the fraud detection module.
+    This function takes a list of personalized transaction verification messages, each containing a transaction code and an email address.
+    It prepares a properly formatted JSON request body to be sent to OpenAI's embedding API.
+
+    The embeddings are used in the fraud detection module to analyze transaction patterns and detect anomalies.
 
     Parameters:
     -----------
     messages : list of str
-        A list of verification messages.
+        A list of verification messages, where each message includes a transaction code and an email address.
+
+    Returns:
+    --------
+    str
+        A JSON-formatted string that can be sent to the OpenAI embeddings API.
     """
 
     json_body = {
