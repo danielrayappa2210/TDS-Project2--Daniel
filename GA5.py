@@ -15,6 +15,7 @@ from rapidfuzz import fuzz
 from dotenv import load_dotenv
 from PIL import Image
 import io
+import time
 
 load_dotenv()  
 
@@ -603,14 +604,36 @@ def extract_and_transcribe(start_time, stop_time):
 
     # Step 4: Make the request to the Gemini API and print the transcription output
     audio_transcription = ""
-    response = requests.post(url, headers=headers, data=json.dumps(data), stream=True)
-    for line in response.iter_lines():
-        if line:
-            output = line.decode("utf-8")
-            output = json.loads(output[6:])  # Adjust slicing as needed based on the response format
-            audio_transcription = audio_transcription + output["candidates"][0]["content"]["parts"][0]["text"]
+    retries = 3  # Maximum number of retries
+    delay = 1  # Initial delay in seconds
 
-    return audio_transcription
+    for attempt in range(retries):
+        try:
+            response = requests.post(url, headers=headers, data=json.dumps(data), stream=True)
+            response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+
+            for line in response.iter_lines():
+                if line:
+                    output = line.decode("utf-8")
+                    output = json.loads(output[6:])
+                    audio_transcription += output["candidates"][0]["content"]["parts"][0]["text"]
+            return audio_transcription  # Success, return the transcription
+
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 503:
+                error_msg = e.response.text
+                print(f"Attempt {attempt + 1} failed with 503. Retrying in {delay} seconds...")
+                time.sleep(delay)
+                delay *= 2  # Exponential backoff
+            else:
+                print(f"Attempt {attempt + 1} failed with error: {e}")
+                return audio_transcription # return with whatever transcription was gathered so far.
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed with exception: {e}")
+            return audio_transcription # return with whatever transcription was gathered so far.
+
+    print("Maximum retries reached. Unable to get transcription.")
+    return error_msg # return with whatever transcription was gathered so far.
 
 # ====================================================================================================================
 
