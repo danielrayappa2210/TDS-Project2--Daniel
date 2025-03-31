@@ -121,20 +121,20 @@ def fetch_imdb_movies(min_rating: float, max_rating: float) -> list:
 
 def country_outline_api_endpoint():
     """
-    Returns the API endpoint URL URL for a FastAPI service that accepts a country name as a query parameter.
-    The API fetches the corresponding Wikipedia page, extracts all headings (H1 to H6), and generates a Markdown-
-    formatted outline of the page content. The application is configured with CORS to allow GET requests from any origin,
-    ensuring seamless integration with various educational tools.
+    Retrieves the API endpoint URL for a FastAPI service that generates a structured Markdown outline of a Wikipedia page for a specified country.
 
-    The endpoint is typically structured as follows:
-        http://127.0.0.1:8000/api/outline
+    This function does not accept any parameters and simply returns the API URL where the service is hosted.
+
+    API Functionality:
+    - Accepts a country name as a query parameter (`?country=`).
+    - Fetches the corresponding Wikipedia page for that country.
+    - Extracts all headings (H1 to H6) while maintaining their hierarchical structure.
+    - Formats the extracted headings into a Markdown-based outline.
+    - Enables Cross-Origin Resource Sharing (CORS) to allow unrestricted GET requests from any origin.
 
     Returns:
-    --------
-    str
-        The URL of the API endpoint.
+        str: The URL of the API endpoint where users can request structured country outlines.
     """
-
     return "https://tds-project-2-ga-4-3.vercel.app/api/outline"
 
 # ====================================================================================================================

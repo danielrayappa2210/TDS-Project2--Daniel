@@ -806,7 +806,7 @@ GA4_tools = [
         "type": "function",
         "function": {
             "name": "country_outline_api_endpoint",
-            "description": "Returns the API endpoint URL for a FastAPI service that extracts all headings (H1 to H6) from a Wikipedia page for a given country, generating a Markdown-formatted outline of the page content.",
+            "description": "Creates a Fastapi service to retrieving a structured Markdown outline of a Wikipedia page for a specified country and returns the API endpoint URL. This API extracts headings (H1 to H6) from the page, maintains their hierarchical order, and formats them as an outline. The endpoint allows querying by country name and supports CORS for seamless integration into educational tools.",
             "parameters": {
                 "type": "object",
                 "properties": {},
